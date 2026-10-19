@@ -1,0 +1,11 @@
+name: judge_the_case_models
+description: Judge the Case data models (Firestore documents), game rules, repository interface and fake data. Pure Dart.
+publish_to: 'none'
+version: 0.2.0
+
+environment:
+  sdk: ^3.5.0
+
+dev_dependencies:
+  lints: ^5.0.0
+  test: ^1.25.0

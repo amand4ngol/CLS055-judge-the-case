@@ -1,0 +1,141 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:judge_the_case_mockup/models.dart';
+import 'package:judge_the_case_mockup/src/claude_client.dart';
+import 'package:judge_the_case_mockup/src/pipeline.dart';
+import 'package:judge_the_case_mockup/src/rechtspraak.dart';
+
+void main() {
+  final assets = PipelineAssets(
+    promptMarkdown: File('assets/prompt-rechtspraak-to-case.md').readAsStringSync(),
+    schemaJson: File('assets/case.schema.json').readAsStringSync(),
+    exampleJson: File('assets/example-case.json').readAsStringSync(),
+  );
+  final pipeline = CasePipeline(assets: assets, rechtspraak: RechtspraakClient(), claude: ClaudeClient(apiKey: ''));
+  final example = CasePipeline.extractJson(assets.exampleJson);
+
+  test('prompt blocks are extracted and filled', () {
+    expect(assets.systemTemplate, startsWith('You convert Dutch criminal court rulings'));
+    expect(assets.systemPrompt(), isNot(contains('{{CASE_SCHEMA}}')));
+    expect(assets.systemPrompt(), contains('"\$defs"'));
+    final user = assets.userMessage('ECLI:NL:X:2026:1', '<xml/>');
+    expect(user, contains('ECLI: ECLI:NL:X:2026:1'));
+    expect(user, contains('<ruling>\n<xml/>\n</ruling>'));
+  });
+
+  test('example case passes the schema', () {
+    expect(pipeline.validate(example), isEmpty);
+  });
+
+  test('schema errors are reported', () {
+    final broken = Map<String, dynamic>.from(example)
+      ..['schemaVersion'] = 1
+      ..remove('verdict');
+    expect(pipeline.validate(broken), isNotEmpty);
+  });
+
+  test('example case does not leak the outcome', () {
+    expect(CasePipeline.leakedWords(example), isEmpty);
+  });
+
+  test('leak detection catches outcome words', () {
+    final leaky = CasePipeline.extractJson(assets.exampleJson);
+    (leaky['case'] as Map)['summaryShort'] = 'He was sentenced to prison.';
+    expect(CasePipeline.leakedWords(leaky), containsAll(['sentenced', 'prison']));
+  });
+
+  test('month amounts are found as days, weeks or years', () {
+    final n = CasePipeline.numbersIn('proeftijd van 2 jaren; hechtenis van 14 dagen');
+    expect(CasePipeline.amountInDictum(24, months: true, dictumNumbers: n), isTrue);
+    expect(CasePipeline.amountInDictum(0.5, months: true, dictumNumbers: n), isTrue);
+    expect(CasePipeline.amountInDictum(24, months: false, dictumNumbers: n), isFalse);
+  });
+
+  test('acquitted combined with a penalty fails a check', () {
+    final bad = CasePipeline.extractJson(assets.exampleJson);
+    (bad['verdict'] as Map)['courtRuled'] = ['acquitted', 'prison'];
+    final checks = pipeline.runChecks(bad, bad['id'] as String, RulingXml('<x/>'));
+    expect(checks.firstWhere((c) => c.label.startsWith('Acquitted')).ok, isFalse);
+  });
+
+  test('Dutch numbers are read from the dictum', () {
+    final n = CasePipeline.numbersIn('gevangenisstraf van 8 (acht) maanden, waarvan vier maanden '
+        'voorwaardelijk; geldboete van € 1.500,00 en € 250,50');
+    expect(n, containsAll([8.0, 4.0, 1500.0, 250.5]));
+  });
+
+  test('beslissing section and modified date are read from XML', () {
+    const xml = '''<open-rechtspraak xmlns:dcterms="http://purl.org/dc/terms/">
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description>
+<dcterms:modified>2026-10-01T14:24:39</dcterms:modified></rdf:Description></rdf:RDF>
+<uitspraak><section><title>Strafmotivering</title><para>12 maanden</para></section>
+<section><title>9 De beslissing</title><para>gevangenisstraf van 8 maanden</para></section></uitspraak>
+</open-rechtspraak>''';
+    final r = RulingXml(xml);
+    expect(r.modified, '2026-10-01T14:24:39');
+    expect(r.dictumText, contains('8 maanden'));
+    expect(r.dictumText, isNot(contains('12 maanden')));
+  });
+
+  test('full run with mocked Rechtspraak and Claude, one correction round', () async {
+    const ecli = 'ECLI:NL:RBNHO:2026:13327';
+    const xml = '''<open-rechtspraak xmlns:dcterms="http://purl.org/dc/terms/">
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description>
+<dcterms:modified>2026-10-01T14:24:39</dcterms:modified></rdf:Description></rdf:RDF>
+<uitspraak><section><title>Beslissing</title><para>gevangenisstraf van 8 (acht) maanden, waarvan 4 maanden
+voorwaardelijk, proeftijd 2 jaar; ontzegging 3 jaar waarvan 1 jaar voorwaardelijk; € 10.500,00</para></section></uitspraak>
+</open-rechtspraak>''';
+    final sentBodies = <Map<String, dynamic>>[];
+    var claudeCalls = 0;
+    final mock = MockClient((req) async {
+      if (req.url.host == 'data.rechtspraak.nl') {
+        expect(req.url.queryParameters['id'], ecli);
+        return http.Response.bytes(utf8.encode(xml), 200);
+      }
+      expect(req.headers['x-api-key'], 'test-key');
+      final body = jsonDecode(req.body) as Map<String, dynamic>;
+      sentBodies.add(body);
+      claudeCalls++;
+      // First answer is broken (wrong enum), second is the valid example.
+      final out = claudeCalls == 1 ? assets.exampleJson.replaceFirst('"traffic"', '"roads"') : assets.exampleJson;
+      return http.Response.bytes(
+          utf8.encode(jsonEncode({
+            'model': 'claude-opus-5-5',
+            'stop_reason': 'end_turn',
+            'content': [
+              {'type': 'thinking', 'thinking': '', 'signature': 'x'},
+              {'type': 'text', 'text': out},
+            ],
+            'usage': {'input_tokens': 20000, 'output_tokens': 3000},
+          })),
+          200);
+    });
+    final p = CasePipeline(
+        assets: assets, rechtspraak: RechtspraakClient(client: mock), claude: ClaudeClient(apiKey: 'test-key', client: mock));
+    final r = await p.run(ecli, model: ClaudeModel.all.first);
+
+    expect(r.attempts.length, 2);
+    expect(r.attempts.first.schemaErrors, isNotEmpty);
+    expect(sentBodies.first['thinking'], {'type': 'adaptive'});
+    expect((sentBodies.first['system'] as String), contains('"\$defs"'));
+    // The correction round replays the first answer unchanged, thinking block included.
+    final msgs = sentBodies.last['messages'] as List;
+    expect(msgs.length, 3);
+    expect((msgs[1]['content'] as List).first['type'], 'thinking');
+    expect(r.caseJson!['pipeline']['model'], 'claude-opus-5-5');
+    expect(r.caseJson!['pipeline']['sourceModifiedAt'], '2026-10-01T14:24:39Z');
+    expect(r.caseJson!['case']['sourceUrl'], 'https://deeplink.rechtspraak.nl/uitspraak?id=$ecli');
+    expect(r.courtCase!.title, 'Red Light at 130');
+    expect(r.verdict!.courtRuled, {VerdictOption.prison, VerdictOption.probation});
+    for (final c in r.checks) {
+      expect(c.ok, isTrue, reason: '${c.label}: ${c.detail}');
+    }
+    expect(r.caseJson!['pipeline']['validated'], isTrue);
+    expect(r.costUsd(ClaudeModel.all.first), closeTo(2 * (0.08 + 0.06), 1e-9));
+  });
+}

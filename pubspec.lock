@@ -75,6 +75,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  judge_the_case_models:
+    dependency: "direct main"
+    description:
+      path: "packages/judge_the_case_models"
+      relative: true
+    source: path
+    version: "0.2.0"
   leak_tracker:
     dependency: transitive
     description:

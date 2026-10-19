@@ -16,6 +16,9 @@ analyzer:
     - windows/**
     - macos/**
     - linux/**
+    # Each package has its own analysis_options.yaml; pipeline-mockup is reference code, not compiled.
+    - packages/**
+    - docs/**
 include: package:flutter_lints/flutter.yaml
 
 linter:
