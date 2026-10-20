@@ -34,10 +34,17 @@ class HomeHeader extends StatelessWidget {
       ),
       child: Stack(
         children: [
+          // Positioned(
+          //   left: 5,
+          //   top: 10,
+          //   child: Center(
+          //     child: AppSvg(AppAssets.caseHome, excludeFromSemantics: true),
+          //   ),
+          // ),
           if (country != null)
             Positioned(
-              left: 42,
-              top: 5,
+              left: 20,
+              top: 10,
               child: TapTarget(
                 label: 'Country: ${country.name}',
                 onTap: onCountryTap,
