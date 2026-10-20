@@ -8,6 +8,9 @@ abstract final class AppAssets {
   static const check = 'assets/icons/check.svg';
   static const lock = 'assets/icons/lock.svg';
 
+  /// splash screen logo.
+  static const courthouse = 'assets/icons/courthouse.svg';
+
   // Country picker
   static const search = 'assets/icons/search.svg';
   static const chevronUp = 'assets/icons/chevron_up.svg';

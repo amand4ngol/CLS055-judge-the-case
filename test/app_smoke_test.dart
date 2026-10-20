@@ -2,14 +2,23 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:judge_the_case/app.dart';
 import 'package:judge_the_case/data/fake_game_repository.dart';
+import 'package:judge_the_case/screens/home/home_screen.dart';
+import 'package:judge_the_case/screens/splash/splash_screen.dart';
 
 void main() {
-  testWidgets('the home screen loads with bundled fonts', (tester) async {
+  testWidgets('the splash screen opens the home screen', (tester) async {
     final repository = await FakeGameRepository.withHistory();
     await tester.pumpWidget(JudgeApp(repository: repository));
+
+    // Splash first, even though the fake data loads instantly.
+    expect(find.text('Judge the Case'), findsOneWidget);
+    expect(find.byType(HomeScreen), findsNothing);
+
+    await tester.pump(SplashScreen.minimumDuration);
     await tester.pumpAndSettle();
 
-    expect(find.text('REAL COURT CASES'), findsOneWidget);
+    expect(find.byType(SplashScreen), findsNothing);
+    expect(find.byType(HomeScreen), findsOneWidget);
     expect(find.text('NEXT CASE'), findsWidgets);
   });
 
