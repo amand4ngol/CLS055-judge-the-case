@@ -45,13 +45,18 @@ class MedallionContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(label, style: labelStyle),
-        const SizedBox(height: 1.88),
-        icon,
-      ],
+    // The medallion is a fixed-size badge: with large system text its
+    // content shrinks to fit instead of overflowing the circle.
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(label, style: labelStyle),
+          const SizedBox(height: 1.88),
+          icon,
+        ],
+      ),
     );
   }
 }

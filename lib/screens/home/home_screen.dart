@@ -18,11 +18,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  static const double _heroTop = 80;
-
-  /// Top of the category chips; [CasesSection] lays out the rest from there.
-  static const double _sectionTop = 300;
-  static const double _contentHeight = _sectionTop + CasesSection.height;
+  // Vertical gaps: at the default text size the hero starts 80 below the top
+  // and the category chips 300 below it. With larger text the gaps stay and
+  // everything below moves down instead of overlapping.
+  static const double _gapAboveHero = 24;
+  static const double _gapAboveCases = 30.9;
 
   /// Where the country picker opens, over the header.
   static const Offset _pickerOffset = Offset(16, 12);
@@ -49,37 +49,31 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Stack(
             children: [
               SingleChildScrollView(
-                child: SizedBox(
-                  height: _contentHeight,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: HomeHeader.height,
-                        child: HomeHeader(
-                          country: country,
-                          onCountryTap: () => _setPickerOpen(true),
-                          // TODO: open the profile screen.
-                          onProfileTap: () {},
-                        ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(
+                      height: HomeHeader.height,
+                      child: HomeHeader(
+                        country: country,
+                        onCountryTap: () => _setPickerOpen(true),
+                        // TODO: open the profile screen.
+                        onProfileTap: () {},
                       ),
-                      const Positioned(
-                        top: _heroTop,
-                        left: 16,
-                        right: 16,
-                        child: HomeHero(),
-                      ),
-                      Positioned(
-                        top: _sectionTop,
-                        left: 0,
-                        right: 0,
-                        height: CasesSection.height,
-                        child: CasesSection(onCaseTap: _openCase),
-                      ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: _gapAboveHero),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: HomeHero(),
+                    ),
+                    const SizedBox(height: _gapAboveCases),
+                    // A Stack inside: the pillars overlap the chips and
+                    // the beige band, so this part keeps fixed positions.
+                    SizedBox(
+                      height: CasesSection.height,
+                      child: CasesSection(onCaseTap: _openCase),
+                    ),
+                  ],
                 ),
               ),
               if (_isPickerOpen) ...[
