@@ -18,9 +18,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Vertical gaps: at the default text size the hero starts 80 below the top
-  // and the category chips 300 below it. With larger text the gaps stay and
-  // everything below moves down instead of overlapping.
   static const double _gapAboveHero = 24;
   static const double _gapAboveCases = 30.9;
 

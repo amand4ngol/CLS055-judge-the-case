@@ -15,8 +15,7 @@ class HomeHero extends StatelessWidget {
         const SizedBox(height: 13),
         Text('Take your place\non the bench.', style: AppTextStyles.display),
         const SizedBox(height: 13),
-        // No fixed height, so larger system text pushes the page down
-        // instead of being cut off.
+
         Text(
           'Examine the evidence. Apply the law.\nDeliver your judgment.',
           style: AppTextStyles.body,
