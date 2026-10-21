@@ -33,7 +33,6 @@ class CaseProvider extends ChangeNotifier {
   PlayerVerdict _verdict = PlayerVerdict.empty;
   bool _showLongSummary = false;
   bool _hideSensitiveCases = false;
-  ContentPreferences _preferences = ContentPreferences.none;
   bool _isDelivering = false;
   RulingResult? _result;
   bool _disposed = false;
@@ -69,7 +68,6 @@ class CaseProvider extends ChangeNotifier {
       _courtCase = courtCase;
 
       final preferences = player?.preferences ?? ContentPreferences.none;
-      _preferences = preferences;
       if (preferences.needsWarning(courtCase)) {
         _status = CaseScreenStatus.warning;
         _notify();
@@ -81,15 +79,11 @@ class CaseProvider extends ChangeNotifier {
     }
   }
 
-  /// "Enter anyways" on the trigger warning. The warning does not show
-  /// again: from now on the settings filter sensitive cases.
+  /// "Enter anyways" on the trigger warning.
   Future<void> enterCase() async {
     _status = CaseScreenStatus.loading;
     _notify();
     try {
-      await _repository.savePreferences(
-        _preferences.copyWith(hasSeenTriggerWarning: true),
-      );
       await _open();
     } catch (e) {
       _fail(e);
