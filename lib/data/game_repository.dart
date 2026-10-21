@@ -1,18 +1,28 @@
 import '../models.dart';
 
+export 'account.dart';
+
 /// Everything the screens need from the backend. The app codes against this
-/// interface: [FakeGameRepository] serves fake data today, a Firestore
-/// implementation will replace it without touching the screens.
+/// interface: [FakeGameRepository] serves fake data, [FirestoreGameRepository]
+/// the real database, and the screens work the same with both.
 abstract interface class GameRepository {
-  /// The signed-in player, or null before "Create account".
+  /// The signed-in player, or null when no one is signed in.
   Future<PlayerProfile?> currentPlayer();
 
-  /// "Create account". The password goes to Firebase Auth, not here.
+  /// "Create account", then signs the player in. Throws [AccountException]
+  /// for a taken or invalid username ([Usernames]) or a weak password.
   Future<PlayerProfile> createPlayer({
     required String name,
     required String username,
+    required String password,
     required String countryCode,
   });
+
+  /// Signs in with the username and password chosen on "Create account".
+  /// Throws [AccountException] ([AccountError.wrongCredentials] when they do not match).
+  Future<PlayerProfile> signIn({required String username, required String password});
+
+  Future<void> signOut();
 
   /// Country picker: also changes the country the player rules in.
   Future<List<Country>> countries();

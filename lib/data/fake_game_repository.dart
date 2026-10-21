@@ -6,13 +6,17 @@ import 'game_repository.dart';
 /// the backend is ready. Data goes through the same `fromFirestore` /
 /// `toMap` code as the real app, and through the same game rules
 /// ([RulingResult.evaluate]). Nothing is persisted between launches.
+/// A [player] given here is signed in, with the password [defaultPassword].
 class FakeGameRepository implements GameRepository {
   FakeGameRepository({PlayerProfile? player, this.latency = const Duration(milliseconds: 150)})
       : _player = player {
     _cases.addAll(FakeData.cases);
     _verdicts.addAll(FakeData.verdicts);
     _countries.addAll(FakeData.countries);
+    if (player != null) _passwords[player.username] = defaultPassword;
   }
+
+  static const defaultPassword = 'password';
 
   /// A player who already completed two cases (one right, one wrong) and has
   /// one in progress, to fill the profile and the CONTINUE state.
@@ -37,8 +41,12 @@ class FakeGameRepository implements GameRepository {
   final _cases = <String, Map<String, dynamic>>{};
   final _verdicts = <String, Map<String, dynamic>>{};
   final _countries = <String, Map<String, dynamic>>{};
-  final _rulings = <String, Map<String, dynamic>>{};
+  final _rulingsByUid = <String, Map<String, Map<String, dynamic>>>{};
+  final _passwords = <String, String>{};
+  final _profiles = <String, PlayerProfile>{};
   PlayerProfile? _player;
+
+  Map<String, Map<String, dynamic>> get _rulings => _rulingsByUid.putIfAbsent(_requirePlayer.uid, () => {});
 
   Future<void> _wait() => latency == Duration.zero ? Future.value() : Future.delayed(latency);
 
@@ -75,16 +83,39 @@ class FakeGameRepository implements GameRepository {
   Future<PlayerProfile> createPlayer({
     required String name,
     required String username,
+    required String password,
     required String countryCode,
   }) async {
     await _wait();
+    Usernames.check(username, password);
+    final id = Usernames.normalize(username);
+    if (_passwords.containsKey(id)) throw const AccountException(AccountError.usernameTaken);
+    await signOut();
+    _passwords[id] = password;
     return _player = PlayerProfile(
-      uid: 'fake-${username.toLowerCase()}',
-      name: name,
-      username: username,
+      uid: 'fake-$id',
+      name: name.trim(),
+      username: id,
       countryCode: countryCode,
       createdAt: DateTime.now(),
     );
+  }
+
+  @override
+  Future<PlayerProfile> signIn({required String username, required String password}) async {
+    await _wait();
+    final id = Usernames.normalize(username);
+    if (_passwords[id] != password) throw const AccountException(AccountError.wrongCredentials);
+    if (_player?.username == id) return _player!;
+    await signOut();
+    return _player = _profiles[id]!;
+  }
+
+  @override
+  Future<void> signOut() async {
+    final player = _player;
+    if (player != null) _profiles[player.username] = player;
+    _player = null;
   }
 
   @override
