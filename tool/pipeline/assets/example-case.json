@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 2,
+  "id": "ECLI:NL:RBNHO:2026:13327",
+  "case": {
+    "status": "published",
+    "country": "NL",
+    "countryName": "Netherlands",
+    "year": 2026,
+    "decisionDate": "2026-09-03",
+    "legalArea": "criminal",
+    "category": "traffic",
+    "title": "Red Light at 130",
+    "court": "District Court of North Holland",
+    "charges": [
+      "Reckless driving causing a crash with serious injury",
+      "Driving with a blood alcohol level above the legal limit"
+    ],
+    "summaryShort": "A driver who had been drinking sped through a red light at a rural crossroads and hit another car. The other driver was badly injured.",
+    "summaryLong": "On a summer evening, a man drove his car at 128 to 138 km/h on a road limited to 50 km/h. His blood alcohol level was 0.71 mg/ml, above the 0.5 legal limit. His partner and her two-year-old daughter were in the car. He drove through a traffic light that had been red for at least 8.9 seconds and crashed into another car crossing the junction. The other driver suffered a broken leg and bruised ribs and is still in psychological treatment. The defendant's partner fractured her spine and a hand. He says he believed the light was green and that he was rushing because his son was ill.",
+    "arguments": [
+      { "side": "prosecution", "text": "He drove at about 130 km/h in a 50 km/h zone and ran a light that had been red for almost 9 seconds." },
+      { "side": "prosecution", "text": "His blood alcohol level was 0.71 mg/ml, above the 0.5 legal limit, with a two-year-old child in the car." },
+      { "side": "prosecution", "text": "He had an earlier conviction for speeding, with his licence suspended for 56 days." },
+      { "side": "defence", "text": "He believed the light was green and was rushing because his son was ill." },
+      { "side": "defence", "text": "After his licence was seized he lost his job and his rented home." },
+      { "side": "context", "text": "The injured driver broke a leg and ribs and is still in psychological treatment." }
+    ],
+    "contentWarnings": ["violence", "minors"],
+    "sourceUrl": "https://deeplink.rechtspraak.nl/uitspraak?id=ECLI:NL:RBNHO:2026:13327",
+    "addedAt": "2026-10-19T12:00:00Z"
+  },
+  "verdict": {
+    "courtRuled": ["prison", "probation"],
+    "sentence": {
+      "prisonMonths": 8,
+      "prisonSuspendedMonths": 4,
+      "fineEur": null,
+      "communityServiceHours": null,
+      "probationMonths": 24
+    },
+    "otherMeasures": [
+      { "type": "driving_ban", "label": "3-year driving ban, 1 year suspended" },
+      { "type": "compensation", "label": "EUR 10,500 to the injured driver" }
+    ],
+    "actualSentence": "8 months in prison, 4 of them suspended with 2 years of probation, a 3-year driving ban (1 suspended) and EUR 10,500 compensation to the injured driver.",
+    "courtReasoning": "The court found the driving reckless: extreme speed, a red light and alcohol together created a serious and foreseeable danger. National sentencing guidelines set 8 months in prison and a 3-year ban for this level of culpability. His earlier speeding conviction weighed against him. His own injuries, the loss of his job and home, and his remorse were taken into account, but the court saw no reason to replace prison with community service and followed the prosecutor's demand."
+  },
+  "pipeline": {
+    "extractedAt": "2026-10-19T12:00:00Z",
+    "model": "example-hand-checked",
+    "validated": true,
+    "sourceModifiedAt": "2026-10-01T14:24:39Z",
+    "notes": null
+  }
+}
