@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:judge_the_case/data/fake_data.dart';
 import 'package:judge_the_case/data/fake_game_repository.dart';
+import 'package:judge_the_case/data/game_repository.dart';
 import 'package:judge_the_case/models.dart';
 
 void main() {
@@ -151,6 +152,40 @@ void main() {
       column = await repo.caseColumn('NL', CaseCategory.fraud);
       expect(column.map((s) => s.state), [CaseSlotState.completed, CaseSlotState.next]);
       expect((await repo.openCase(second)).status, RulingStatus.inProgress);
+    });
+
+    test('accounts: create, sign out, sign in, and the errors the screens show', () async {
+      final repo = FakeGameRepository(latency: Duration.zero);
+      expect(await repo.currentPlayer(), isNull);
+      Future<AccountError?> error(Future<Object?> Function() action) async {
+        try {
+          await action();
+          return null;
+        } on AccountException catch (e) {
+          return e.error;
+        }
+      }
+
+      expect(await error(() => repo.createPlayer(name: 'A', username: 'ab', password: 'secret1', countryCode: 'NL')),
+          AccountError.invalidUsername);
+      expect(await error(() => repo.createPlayer(name: 'A', username: 'anna', password: '123', countryCode: 'NL')),
+          AccountError.weakPassword);
+      final anna = await repo.createPlayer(name: ' Anna ', username: ' Anna ', password: 'secret1', countryCode: 'NL');
+      expect((anna.name, anna.username), ('Anna', 'anna'));
+      expect(await error(() => repo.createPlayer(name: 'B', username: 'ANNA', password: 'secret2', countryCode: 'NL')),
+          AccountError.usernameTaken);
+
+      await repo.deliverVerdict(await repo.caseById(FakeData.whistleblowerId),
+          const PlayerVerdict(options: {VerdictOption.communityService}));
+      await repo.signOut();
+      expect(await repo.currentPlayer(), isNull);
+      expect(await error(() => repo.signIn(username: 'anna', password: 'wrong!')), AccountError.wrongCredentials);
+
+      await repo.createPlayer(name: 'Bob', username: 'bob', password: 'secret2', countryCode: 'NL');
+      expect(await repo.completedRulings(), isEmpty);
+      final back = await repo.signIn(username: 'ANNA', password: 'secret1');
+      expect(back.stats.casesJudged, 1);
+      expect(await repo.completedRulings(), hasLength(1));
     });
 
     test('delivering a verdict updates ruling, stats and achievements', () async {

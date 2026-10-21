@@ -163,5 +163,3 @@ flutter test test/pipeline/
 
 - Publishing a `needs_review` case by hand after a human review.
 - The daily sync of rulings modified or deleted on Rechtspraak.
-- Firestore security rules: phones must not be able to read the `ingestion` collection.
-- Connecting the app to Firebase (`flutterfire configure`).

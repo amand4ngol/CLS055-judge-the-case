@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "571134625341",
+    "project_id": "judge-the-case",
+    "storage_bucket": "judge-the-case.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:571134625341:android:480ef21c21ed6ff5580c54",
+        "android_client_info": {
+          "package_name": "com.example.judge_the_case"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoXUKpN8v0pfanLoNe77IoG7q2nCBNJLc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
