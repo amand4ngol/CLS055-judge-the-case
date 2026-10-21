@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Pipeline: secrets and local results
+/tool/pipeline/.env
+/tool/pipeline/out/
