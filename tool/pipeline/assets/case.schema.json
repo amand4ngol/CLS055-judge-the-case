@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "judge-the-case/case.schema.json",
+  "title": "PipelineCase",
+  "description": "Output of the AI pipeline for one Rechtspraak ruling (schema v2). The pipeline code writes `case` (+ `pipeline`) to Firestore `cases/{id}` and `verdict` to `verdicts/{id}`. All text is in English.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "case", "verdict", "pipeline"],
+  "properties": {
+    "schemaVersion": { "const": 2 },
+    "id": { "$ref": "#/$defs/ecli", "description": "ECLI, used as the document id in both collections" },
+
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Firestore cases/{id}. Everything shown BEFORE the player delivers a verdict. Must not reveal the outcome.",
+      "required": ["status", "country", "countryName", "year", "decisionDate", "legalArea", "category", "title", "court", "charges", "summaryShort", "summaryLong", "arguments", "contentWarnings", "sourceUrl", "addedAt"],
+      "properties": {
+        "status": { "enum": ["draft", "published", "rejected"], "description": "Only `published` cases reach the app" },
+        "country": { "type": "string", "pattern": "^[A-Z]{2}$", "description": "ISO 3166-1 alpha-2, e.g. NL. Drives the country picker" },
+        "countryName": { "type": "string", "description": "e.g. Netherlands" },
+        "year": { "type": "integer", "minimum": 1900 },
+        "decisionDate": { "$ref": "#/$defs/date" },
+        "legalArea": { "enum": ["criminal"], "description": "Badge on the case screen (CRIMINAL). Only criminal cases in v2" },
+        "category": { "$ref": "#/$defs/category" },
+        "title": { "type": "string", "minLength": 3, "maxLength": 60 },
+        "court": { "type": "string", "description": "English court name, e.g. District Court of North Holland" },
+        "charges": { "type": "array", "minItems": 1, "maxItems": 6, "items": { "type": "string", "maxLength": 120 } },
+        "summaryShort": { "type": "string", "maxLength": 400 },
+        "summaryLong": { "type": "string", "maxLength": 2000 },
+        "arguments": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 6,
+          "description": "Key argument cards the player swipes through",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["side", "text"],
+            "properties": {
+              "side": { "enum": ["prosecution", "defence", "context"] },
+              "text": { "type": "string", "maxLength": 200 }
+            }
+          }
+        },
+        "contentWarnings": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/contentWarning" } },
+        "sourceUrl": {
+          "type": "string",
+          "pattern": "^https://deeplink\\.rechtspraak\\.nl/uitspraak\\?id=ECLI:",
+          "description": "Official permanent link to the ruling on rechtspraak.nl (\"Get to the detailed case here\"). Set by code"
+        },
+        "addedAt": { "type": "string", "format": "date-time", "description": "When the case entered the database. Orders cases inside a category. Set by code" }
+      }
+    },
+
+    "verdict": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Firestore verdicts/{id}. Revealed AFTER the player delivers a verdict.",
+      "required": ["courtRuled", "sentence", "otherMeasures", "actualSentence", "courtReasoning"],
+      "properties": {
+        "courtRuled": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/verdictOption" },
+          "description": "The verdict buttons that match the court's decision. Compared with the player's selection"
+        },
+        "sentence": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Amounts for the adjustable verdicts. null when the option is not in courtRuled",
+          "required": ["prisonMonths", "prisonSuspendedMonths", "fineEur", "communityServiceHours", "probationMonths"],
+          "properties": {
+            "prisonMonths": { "type": ["number", "null"], "minimum": 0, "description": "Total custodial sentence imposed, suspended part included" },
+            "prisonSuspendedMonths": { "type": ["number", "null"], "minimum": 0 },
+            "fineEur": { "type": ["number", "null"], "minimum": 0 },
+            "communityServiceHours": { "type": ["integer", "null"], "minimum": 0 },
+            "probationMonths": { "type": ["integer", "null"], "minimum": 0, "description": "Probation period (proeftijd)" }
+          }
+        },
+        "otherMeasures": {
+          "type": "array",
+          "description": "Penalties and measures with no verdict button; shown in the actual sentence only",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type", "label"],
+            "properties": {
+              "type": { "$ref": "#/$defs/measureType" },
+              "label": { "type": "string", "maxLength": 120 }
+            }
+          }
+        },
+        "actualSentence": { "type": "string", "maxLength": 300 },
+        "courtReasoning": { "type": "string", "maxLength": 1500 }
+      }
+    },
+
+    "pipeline": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Admin data, stored in cases/{id}.pipeline; not used by the app",
+      "required": ["extractedAt", "model", "validated", "sourceModifiedAt", "notes"],
+      "properties": {
+        "extractedAt": { "type": "string", "format": "date-time" },
+        "model": { "type": "string" },
+        "validated": { "type": "boolean" },
+        "sourceModifiedAt": { "type": "string", "format": "date-time", "description": "dcterms:modified, for incremental sync" },
+        "notes": { "type": ["string", "null"] }
+      }
+    }
+  },
+
+  "$defs": {
+    "ecli": { "type": "string", "pattern": "^ECLI:NL:[A-Z0-9]+:\\d{4}:\\d+$" },
+    "date": { "type": "string", "format": "date" },
+    "category": {
+      "enum": ["homicide", "violence", "sexual_offences", "theft", "fraud", "financial", "drugs", "traffic", "weapons", "cybercrime", "environmental", "public_order", "other"]
+    },
+    "verdictOption": { "enum": ["fine", "prison", "community_service", "probation", "acquitted", "case_dismissed"] },
+    "contentWarning": { "enum": ["violence", "sexual_violence", "death", "minors", "drugs", "self_harm", "animal_cruelty"] },
+    "measureType": {
+      "enum": ["driving_ban", "compensation", "confiscation", "tbs", "juvenile_treatment_order", "repeat_offender_order", "behavioural_order", "loss_of_rights", "publication", "other"]
+    }
+  }
+}
