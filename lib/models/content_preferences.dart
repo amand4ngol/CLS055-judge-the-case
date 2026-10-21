@@ -5,7 +5,10 @@ import 'firestore_parsing.dart';
 /// Settings > Content preferences, and the trigger warning's
 /// "Do not show me sensitive cases again". Stored in `users/{uid}.preferences`.
 class ContentPreferences {
-  const ContentPreferences({this.hideSensitiveCases = false, this.filteredTopics = const {}});
+  const ContentPreferences({
+    this.hideSensitiveCases = false,
+    this.filteredTopics = const {},
+  });
 
   static const none = ContentPreferences();
 
@@ -16,33 +19,39 @@ class ContentPreferences {
   final Set<ContentWarning> filteredTopics;
 
   /// Whether [c] appears in the case columns.
-  bool allows(CourtCase c) => hideSensitiveCases ? !c.isSensitive : !c.isHiddenBy(filteredTopics);
+  bool allows(CourtCase c) =>
+      hideSensitiveCases ? !c.isSensitive : !c.isHiddenBy(filteredTopics);
 
   /// Whether to show the trigger warning before [c].
   bool needsWarning(CourtCase c) => allows(c) && c.isSensitive;
 
-  ContentPreferences copyWith({bool? hideSensitiveCases, Set<ContentWarning>? filteredTopics}) =>
-      ContentPreferences(
-        hideSensitiveCases: hideSensitiveCases ?? this.hideSensitiveCases,
-        filteredTopics: filteredTopics ?? this.filteredTopics,
-      );
+  ContentPreferences copyWith({
+    bool? hideSensitiveCases,
+    Set<ContentWarning>? filteredTopics,
+  }) => ContentPreferences(
+    hideSensitiveCases: hideSensitiveCases ?? this.hideSensitiveCases,
+    filteredTopics: filteredTopics ?? this.filteredTopics,
+  );
 
   ContentPreferences toggleTopic(ContentWarning topic) => copyWith(
-        filteredTopics: filteredTopics.contains(topic)
-            ? ({...filteredTopics}..remove(topic))
-            : {...filteredTopics, topic},
-      );
+    filteredTopics: filteredTopics.contains(topic)
+        ? ({...filteredTopics}..remove(topic))
+        : {...filteredTopics, topic},
+  );
 
-  factory ContentPreferences.fromMap(Map<String, dynamic> map) => ContentPreferences(
+  factory ContentPreferences.fromMap(Map<String, dynamic> map) =>
+      ContentPreferences(
         hideSensitiveCases: parseBool(map['hideSensitiveCases']),
-        filteredTopics: parseStringList(map['filteredTopics'])
-            .map(ContentWarning.fromValue)
-            .whereType<ContentWarning>()
-            .toSet(),
+        filteredTopics: parseStringList(
+          map['filteredTopics'],
+        ).map(ContentWarning.fromValue).whereType<ContentWarning>().toSet(),
       );
 
   Map<String, dynamic> toMap() => {
-        'hideSensitiveCases': hideSensitiveCases,
-        'filteredTopics': ContentWarning.values.where(filteredTopics.contains).map((w) => w.value).toList(),
-      };
+    'hideSensitiveCases': hideSensitiveCases,
+    'filteredTopics': ContentWarning.values
+        .where(filteredTopics.contains)
+        .map((w) => w.value)
+        .toList(),
+  };
 }

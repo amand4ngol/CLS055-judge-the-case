@@ -49,7 +49,8 @@ class CasesSection extends StatelessWidget {
           ),
         ),
         ...switch (home.status) {
-          HomeStatus.loading => [
+          // Signed out only lasts until the account screens replace home.
+          HomeStatus.loading || HomeStatus.signedOut => [
             const _InBackground(child: CircularProgressIndicator()),
           ],
           HomeStatus.error => [

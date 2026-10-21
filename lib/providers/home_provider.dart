@@ -4,7 +4,8 @@ import '../data/game_repository.dart';
 import '../models.dart';
 import 'case_provider.dart';
 
-enum HomeStatus { loading, ready, error }
+/// [signedOut]: no player on this phone, the account screens come first.
+enum HomeStatus { loading, ready, error, signedOut }
 
 /// State of the home screen: the player, their country, the category chips
 /// and the case column of the selected category.
@@ -58,7 +59,8 @@ class HomeProvider extends ChangeNotifier {
     return index == -1 ? 0 : index;
   }
 
-  /// Loads everything the screen shows. Also used by the retry button.
+  /// Loads everything the screen shows. Also used by the retry button, and
+  /// after "Create account" or "Log in".
   Future<void> load() async {
     _status = HomeStatus.loading;
     _error = null;
@@ -66,7 +68,12 @@ class HomeProvider extends ChangeNotifier {
 
     try {
       final player = await _repository.currentPlayer();
-      if (player == null) throw StateError('No player is signed in');
+      if (player == null) {
+        _player = null;
+        _status = HomeStatus.signedOut;
+        _notify();
+        return;
+      }
 
       _player = player;
       _countries = await _repository.countries();
@@ -162,6 +169,14 @@ class HomeProvider extends ChangeNotifier {
     final preferences = _player?.preferences;
     if (preferences == null) return;
     await _savePreferences(preferences.copyWith(hideSensitiveCases: false));
+    await refreshCases();
+  }
+
+  /// Settings > Content preferences: saves them, then reloads the column
+  /// so filtered cases disappear.
+  Future<void> setPreferences(ContentPreferences preferences) async {
+    await _savePreferences(preferences);
+    _notify();
     await refreshCases();
   }
 

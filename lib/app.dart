@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'core/theme/app_theme.dart';
 import 'data/game_repository.dart';
+import 'providers/account_provider.dart';
 import 'providers/home_provider.dart';
 import 'screens/splash/splash_screen.dart';
 
@@ -21,6 +22,9 @@ class JudgeApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) =>
               HomeProvider(context.read<GameRepository>())..load(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AccountProvider(context.read<GameRepository>()),
         ),
       ],
       child: MaterialApp(

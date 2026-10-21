@@ -9,6 +9,16 @@ abstract final class Formatters {
     return count == 1 ? '1 month' : '$count months';
   }
 
+  /// 2026-10-21 -> "21 Oct 2026"
+  static String date(DateTime date) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', //
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ];
+    final local = date.toLocal();
+    return '${local.day} ${months[local.month - 1]} ${local.year}';
+  }
+
   static String _thousands(int value) {
     final digits = value.abs().toString();
     final buffer = StringBuffer(value < 0 ? '-' : '');
