@@ -3,4 +3,5 @@
     <!-- Same as AppColors.splashBackground, so the native launch screen
          blends into the Flutter splash screen. -->
     <color name="splash_background">#DFDACD</color>
+    <color name="ic_launcher_background">#DFDACD</color>
 </resources>
