@@ -77,10 +77,11 @@ void main() {
     expect(home.cases, isNotEmpty);
   });
 
-  test('reports an error when nobody is signed in', () async {
+  test('reports signed out when nobody is signed in', () async {
     final home = HomeProvider(FakeGameRepository(latency: Duration.zero));
     await home.load();
 
-    expect(home.status, HomeStatus.error);
+    expect(home.status, HomeStatus.signedOut);
+    expect(home.player, isNull);
   });
 }

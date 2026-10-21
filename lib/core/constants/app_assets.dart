@@ -15,6 +15,9 @@ abstract final class AppAssets {
   static const search = 'assets/icons/search.svg';
   static const chevronUp = 'assets/icons/chevron_up.svg';
 
+  /// Closed country dropdown on "Create account".
+  static const chevronDown = 'assets/icons/chevron_down.svg';
+
   // Result screen header
   static const resultHome = 'assets/icons/result_home.svg';
 
@@ -23,6 +26,15 @@ abstract final class AppAssets {
 
   /// Scales on the first argument card.
   static const scales = 'assets/icons/scales.svg';
+
+  // Profile screen
+  static const profileScales = 'assets/icons/profile_scales.svg';
+  static const settings = 'assets/icons/settings.svg';
+  static const arrowDropDown = 'assets/icons/arrow_drop_down.svg';
+
+  // Settings screen
+  static const chevronDownDark = 'assets/icons/chevron_down_dark.svg';
+  static const edit = 'assets/icons/edit.svg';
 
   // Verdict buttons
   static const verdictFine = 'assets/icons/verdict_fine.svg';

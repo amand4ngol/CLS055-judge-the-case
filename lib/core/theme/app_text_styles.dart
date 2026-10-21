@@ -170,6 +170,255 @@ abstract final class AppTextStyles {
     color: AppColors.countryPickerProgressSelected,
   );
 
+  // ---------------------------------------------------------------------------
+  // Account screens ("Create account", "Log in")
+  // ---------------------------------------------------------------------------
+
+  /// "CREATE ACCOUNT TO START JUDGING".
+  static final accountEyebrow = _dmSans(
+    12,
+    FontWeight.w400,
+    AppColors.brown,
+    letterSpacing: 2.42,
+    lineHeight: 16.5,
+  );
+
+  /// "Welcome Back, Judge".
+  static final accountTitle = _caslon(
+    36,
+    AppColors.brown,
+    letterSpacing: -1.8287,
+    lineHeight: 51.204,
+  );
+
+  /// Label in the outline of a text field. Flutter draws a floating label at
+  /// 75% of its size, so this is 16 to show the design's 12.
+  static final fieldLabel = _dmSans(
+    16,
+    FontWeight.w400,
+    AppColors.fieldLabel,
+    letterSpacing: 0.4 / 0.75,
+    lineHeight: 16 / 0.75,
+  );
+  static final fieldHint = _caslon(
+    16,
+    AppColors.brown,
+    letterSpacing: 0.5,
+    lineHeight: 24,
+  );
+  static final fieldInput = fieldHint.copyWith(color: AppColors.textDark);
+
+  /// Error under the fields ("This username is already taken").
+  static final fieldError = _dmSans(
+    12,
+    FontWeight.w400,
+    AppColors.resultIncorrect,
+    letterSpacing: 0.4,
+    lineHeight: 16,
+  );
+
+  /// "Choose country to rule in" and the search field of the open dropdown.
+  static final countryDropdown = _dmSans(
+    14,
+    FontWeight.w500,
+    AppColors.white,
+    letterSpacing: 0.1,
+    lineHeight: 20,
+  );
+  static final countryDropdownHint = countryDropdown.copyWith(
+    color: AppColors.white.withValues(alpha: 0.7),
+  );
+
+  /// "Create account", "Log in" (blue) and "Create new account" (white).
+  static final accountButton = _caslon(
+    20,
+    AppColors.white,
+    letterSpacing: 0.15,
+    lineHeight: 24,
+  );
+  static final accountButtonSecondary = accountButton.copyWith(
+    color: AppColors.brown,
+  );
+
+  /// "Forgot password?" and "I already have an account".
+  static final accountLink =
+      _caslon(
+        16,
+        AppColors.badgeRedText,
+        letterSpacing: 0.15,
+        lineHeight: 24,
+      ).copyWith(
+        decoration: TextDecoration.underline,
+        decorationColor: AppColors.badgeRedText,
+      );
+  static final accountLinkMuted = accountLink.copyWith(
+    color: AppColors.brown,
+    decorationColor: AppColors.brown,
+  );
+
+  // ---------------------------------------------------------------------------
+  // Profile screen
+  // ---------------------------------------------------------------------------
+
+  /// "MY PROFILE" in the header.
+  static final profileHeader = _dmSans(
+    14,
+    FontWeight.w400,
+    AppColors.textDark,
+    letterSpacing: 1.98,
+    lineHeight: 13.5,
+  );
+
+  // Welcome card
+  static final profileWelcome = _dmSans(
+    8,
+    FontWeight.w400,
+    AppColors.beige.withValues(alpha: 0.55),
+    letterSpacing: 2,
+    lineHeight: 12,
+  );
+  static final profileName = _dmSans(
+    24,
+    FontWeight.w700,
+    AppColors.beige,
+    lineHeight: 32,
+  );
+  static final profileRank = _dmSans(
+    10,
+    FontWeight.w400,
+    AppColors.beige.withValues(alpha: 0.6),
+    lineHeight: 15,
+  );
+  static final profileCounter = _dmSans(
+    9,
+    FontWeight.w700,
+    AppColors.profileCounter,
+    lineHeight: 13.5,
+  );
+  static final profileMilestone = _dmSans(
+    10,
+    FontWeight.w400,
+    AppColors.beige.withValues(alpha: 0.8),
+    lineHeight: 15,
+  );
+
+  /// "CASES STATISTICS", "REVISE YOUR PREVIOUS CASES".
+  static final profileSection = _dmSans(
+    10,
+    FontWeight.w400,
+    AppColors.textSubtle,
+    letterSpacing: 1.6,
+    lineHeight: 12,
+  );
+
+  /// "ACHIEVEMENTS".
+  static final profileSectionBold = _dmSans(
+    12,
+    FontWeight.w700,
+    AppColors.textSubtle,
+    letterSpacing: 1.6,
+    lineHeight: 12,
+  );
+
+  // Statistics tiles (Lora in the design, which the app does not bundle)
+  static final statValue = _caslon(20, AppColors.white, lineHeight: 28);
+  static final statLabel = _dmSans(
+    6,
+    FontWeight.w400,
+    AppColors.white.withValues(alpha: 0.8),
+    letterSpacing: 1.08,
+    lineHeight: 9,
+  );
+
+  // Previous cases
+  static final previousCaseTitle = _dmSans(
+    14,
+    FontWeight.w400,
+    AppColors.textDark,
+    lineHeight: 16,
+  );
+  /// "Traffic · 2023" under a previous case.
+  static final previousCaseDetail = _dmSans(
+    10,
+    FontWeight.w400,
+    AppColors.textSubtle,
+    lineHeight: 14,
+  );
+  static final previousCaseAction = _dmSans(
+    12,
+    FontWeight.w400,
+    AppColors.textSubtle,
+    lineHeight: 12,
+  );
+
+  // Achievements
+  static final achievementCount = _dmSans(
+    8,
+    FontWeight.w700,
+    AppColors.achievementCount,
+    lineHeight: 12,
+  );
+  static final achievementBadge = _caslon(
+    10,
+    AppColors.textSubtle,
+    lineHeight: 15,
+  );
+  static final achievementTitle = _dmSans(
+    12,
+    FontWeight.w600,
+    AppColors.beige,
+    lineHeight: 16,
+  );
+  static final achievementDescription = _dmSans(
+    10,
+    FontWeight.w400,
+    AppColors.beige.withValues(alpha: 0.65),
+    lineHeight: 13.75,
+  );
+
+  // ---------------------------------------------------------------------------
+  // Settings screen ("SETTINGS" in the header uses [profileHeader])
+  // ---------------------------------------------------------------------------
+
+  /// "CONTENT PREFERENCES", "MANAGE ACCOUNT".
+  static final settingsSection = _dmSans(
+    12,
+    FontWeight.w400,
+    AppColors.textSubtle,
+    letterSpacing: 1.6,
+    lineHeight: 12,
+  );
+  static final settingsBody = _dmSans(
+    14,
+    FontWeight.w400,
+    AppColors.textDark,
+    lineHeight: 22.75,
+  );
+
+  /// "Sensitive case filter", "Edit information", "Sign out".
+  static final settingsItem = _dmSans(
+    14,
+    FontWeight.w500,
+    AppColors.countryPickerName,
+    letterSpacing: 0.1,
+    lineHeight: 20,
+  );
+
+  /// "No filter selected".
+  static final settingsItemDetail = _dmSans(
+    12,
+    FontWeight.w400,
+    AppColors.fieldLabel,
+    letterSpacing: 0.4,
+    lineHeight: 16,
+  );
+  static final settingsNote = _dmSans(
+    12,
+    FontWeight.w400,
+    AppColors.textSubtle,
+    lineHeight: 19.5,
+  );
+
   // Case screen
 
   // Header

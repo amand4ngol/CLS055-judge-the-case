@@ -34,6 +34,22 @@ void main() {
     expect(provider.status, CaseScreenStatus.ready);
   });
 
+  test('the trigger warning only shows once', () async {
+    final repo = await FakeGameRepository.withHistory();
+    final first = CaseProvider(repo, FakeData.deathAtTheWheelId);
+    await first.load();
+    expect(first.status, CaseScreenStatus.warning);
+    await first.enterCase();
+
+    final player = await repo.currentPlayer();
+    expect(player?.preferences.hasSeenTriggerWarning, isTrue);
+
+    // The next sensitive case opens straight away.
+    final again = CaseProvider(repo, FakeData.deathAtTheWheelId);
+    await again.load();
+    expect(again.status, CaseScreenStatus.ready);
+  });
+
   test('reading arguments and delivering a verdict', () async {
     final repo = await FakeGameRepository.withHistory();
     final provider = CaseProvider(repo, FakeData.whistleblowerId);
