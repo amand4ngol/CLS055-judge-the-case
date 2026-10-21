@@ -37,6 +37,10 @@ dependencies:
   firebase_core: ^4.0.0
   cloud_firestore: ^6.7.1
   firebase_auth: ^6.0.0
+  provider: ^6.1.5+1
+  flutter_svg: ^2.2.3
+  url_launcher: ^6.3.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -50,7 +54,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
   http: ^1.6.0
-  xml: ^7.1.0
+  xml: ^7.0.0
   json_schema: ^5.2.2
   googleapis: ^17.0.0
   googleapis_auth: ^2.3.4
@@ -69,6 +73,48 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - assets/icons/
+    - assets/images/
+    # Font licenses, shown on the app's license page (AppFonts).
+    - assets/fonts/LibreCaslonDisplay/OFL.txt
+    - assets/fonts/DMSans/OFL.txt
+    - assets/fonts/Inter/OFL.txt
+    - assets/fonts/Roboto/OFL.txt
+
+  # Bundled so text renders offline and the app never contacts Google's font
+  # servers. Only the weights the app uses (see lib/core/theme/
+  # app_text_styles.dart). All four are under the SIL Open Font License; the
+  # license is in each family's folder. The family names here are what
+  # `TextStyle.fontFamily` refers to (AppFonts).
+  fonts:
+    - family: Libre Caslon Display
+      fonts:
+        - asset: assets/fonts/LibreCaslonDisplay/LibreCaslonDisplay-Regular.ttf
+    - family: DM Sans
+      fonts:
+        - asset: assets/fonts/DMSans/DMSans-Light.ttf
+          weight: 300
+        - asset: assets/fonts/DMSans/DMSans-Regular.ttf
+        - asset: assets/fonts/DMSans/DMSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/DMSans/DMSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/DMSans/DMSans-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/DMSans/DMSans-ExtraBold.ttf
+          weight: 800
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter/Inter-Regular.ttf
+        - asset: assets/fonts/Inter/Inter-SemiBold.ttf
+          weight: 600
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto/Roboto-Regular.ttf
+        - asset: assets/fonts/Roboto/Roboto-Medium.ttf
+          weight: 500
 
   # To add assets to your application, add an assets section, like this:
   # assets:
