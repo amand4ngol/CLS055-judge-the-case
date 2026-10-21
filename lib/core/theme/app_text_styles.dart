@@ -3,9 +3,7 @@ import 'app_colors.dart';
 import 'app_fonts.dart';
 
 abstract final class AppTextStyles {
-  // ---------------------------------------------------------------------------
   // Type scale (used by the app theme and by screens)
-  // ---------------------------------------------------------------------------
 
   static final display = _caslon(
     48,
@@ -40,9 +38,16 @@ abstract final class AppTextStyles {
     labelMedium: labelSmall,
   );
 
-  // ---------------------------------------------------------------------------
+  // Splash screen ("REAL COURT CASES" under it uses [labelSmall])
+
+  static final splashTitle = _caslon(
+    50,
+    AppColors.brown,
+    letterSpacing: -1.8287,
+    lineHeight: 51.204,
+  );
+
   // Home screen
-  // ---------------------------------------------------------------------------
 
   static final swipeArrow = _dmSans(
     14,
@@ -165,9 +170,7 @@ abstract final class AppTextStyles {
     color: AppColors.countryPickerProgressSelected,
   );
 
-  // ---------------------------------------------------------------------------
   // Case screen
-  // ---------------------------------------------------------------------------
 
   // Header
   static final caseBadge = _dmSans(
@@ -287,9 +290,7 @@ abstract final class AppTextStyles {
     lineHeight: 16,
   );
 
-  // ---------------------------------------------------------------------------
   // Result screen
-  // ---------------------------------------------------------------------------
 
   /// "✗ INCORRECT VERDICT"; the color comes from the outcome.
   static final resultOutcomeLabel = _dmSans(
@@ -361,9 +362,7 @@ abstract final class AppTextStyles {
         decorationColor: AppColors.textSubtle,
       );
 
-  // ---------------------------------------------------------------------------
   // Trigger warning
-  // ---------------------------------------------------------------------------
 
   static final warningTitle = _dmSans(40, FontWeight.w300, AppColors.black);
   static final warningBody = _dmSans(20, FontWeight.w300, AppColors.text);

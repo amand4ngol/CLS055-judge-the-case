@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
 import 'data/game_repository.dart';
 import 'providers/home_provider.dart';
-import 'screens/home/home_screen.dart';
+import 'screens/splash/splash_screen.dart';
 
 /// Root widget: registers the providers and the theme.
 class JudgeApp extends StatelessWidget {
@@ -27,7 +27,7 @@ class JudgeApp extends StatelessWidget {
         title: 'Judge the Case',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
-        home: const HomeScreen(),
+        home: const SplashScreen(),
       ),
     );
   }

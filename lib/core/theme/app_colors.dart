@@ -37,6 +37,11 @@ abstract final class AppColors {
 
   static const cream = Color(0xFFEEE9DF);
 
+  /// Splash screen. Also set as the native launch background in
+  /// android/app/src/main/res/values/colors.xml and
+  /// ios/Runner/Base.lproj/LaunchScreen.storyboard; keep them in sync.
+  static const splashBackground = Color(0xFFDFDACD);
+
   // Home: cases section
 
   static const sectionGradientTop = Color.fromRGBO(220, 214, 201, 0.78);
