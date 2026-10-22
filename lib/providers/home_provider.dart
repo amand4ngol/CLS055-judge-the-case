@@ -144,6 +144,13 @@ class HomeProvider extends ChangeNotifier {
       )
       .firstOrNull;
 
+  /// Scrolls the pillars back to [focusedCaseIndex]: the board rebuilds its
+  /// carousel for every new list, e.g. after a recap of a past case.
+  void focusNextCase() {
+    _cases = List.of(_cases);
+    _notify();
+  }
+
   /// The court's verdict next to the player's, for a completed case.
   Future<RulingResult?> pastResult(String caseId) async {
     try {

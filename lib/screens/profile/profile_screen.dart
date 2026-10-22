@@ -41,9 +41,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final navigator = Navigator.of(context);
     final result = await context.read<HomeProvider>().pastResult(ruling.caseId);
     if (result == null || !mounted) return;
-    final action = await navigator.push(ResultScreen.route(result));
-    // "Home" or "Next Case" on the result screen: back to home.
-    if (action != null && mounted) navigator.pop();
+    await navigator.push(ResultScreen.route(result, isRecap: true));
   }
 
   @override
