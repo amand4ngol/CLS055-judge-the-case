@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Completed cases open their result; the others open the case, then
+  /// Completed cases open their recap; the others open the case, then
   /// the result once a verdict is delivered.
   Future<void> _openCase(CaseSlot slot) async {
     if (!slot.isPlayable) return;
@@ -107,7 +107,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (slot.state == CaseSlotState.completed) {
       final result = await home.pastResult(slot.courtCase.id);
-      if (result != null && mounted) await _showResult(result);
+      if (result == null || !mounted) return;
+      await navigator.push(ResultScreen.route(result, isRecap: true));
+      home.focusNextCase();
       return;
     }
 

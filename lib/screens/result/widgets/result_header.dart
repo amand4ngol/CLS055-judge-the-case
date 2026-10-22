@@ -6,13 +6,20 @@ import '../../../shared/widgets/app_svg.dart';
 import '../../../shared/widgets/profile_button.dart';
 import '../../../shared/widgets/tap_target.dart';
 
+/// Home pillar and profile button, or a single back arrow on a recap.
 class ResultHeader extends StatelessWidget {
-  const ResultHeader({super.key, required this.onHome, this.onProfile});
+  const ResultHeader({
+    super.key,
+    required this.onBack,
+    this.onProfile,
+    this.isRecap = false,
+  });
 
   static const double height = 50;
 
-  final VoidCallback onHome;
+  final VoidCallback onBack;
   final VoidCallback? onProfile;
+  final bool isRecap;
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +31,19 @@ class ResultHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           TapTarget(
-            label: 'Return to home',
-            onTap: onHome,
-            child: const SizedBox.square(
+            label: isRecap ? 'Back' : 'Return to home',
+            onTap: onBack,
+            child: SizedBox.square(
               dimension: 30,
-              child: AppSvg(AppAssets.resultHome, excludeFromSemantics: true),
+              child: isRecap
+                  ? const Icon(Icons.arrow_back, color: AppColors.brown)
+                  : const AppSvg(
+                      AppAssets.resultHome,
+                      excludeFromSemantics: true,
+                    ),
             ),
           ),
-          ProfileButton(onTap: onProfile),
+          if (!isRecap) ProfileButton(onTap: onProfile),
         ],
       ),
     );
