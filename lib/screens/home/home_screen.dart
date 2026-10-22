@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../models.dart';
 import '../../providers/home_provider.dart';
 import '../case/case_screen.dart';
+import '../profile/profile_screen.dart';
 import '../result/result_screen.dart';
 import 'widgets/cases_section.dart';
 import 'widgets/country_picker.dart';
@@ -54,8 +55,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: HomeHeader(
                         country: country,
                         onCountryTap: () => _setPickerOpen(true),
-                        // TODO: open the profile screen.
-                        onProfileTap: () {},
+                        onProfileTap: () => Navigator.of(
+                          context,
+                        ).push(ProfileScreen.route()),
                       ),
                     ),
                     const SizedBox(height: _gapAboveHero),

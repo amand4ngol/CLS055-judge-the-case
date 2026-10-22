@@ -75,6 +75,48 @@ abstract final class AppColors {
   static const countryPickerProgress = Color(0xFF49454F);
   static const countryPickerProgressSelected = Color(0xFF4A4459);
 
+  // Account screens ("Create account", "Log in"), on [splashBackground]
+
+  /// Outline of the text fields.
+  static const fieldOutline = Color(0xFF79747E);
+
+  /// Label in the outline of a text field ("Name").
+  static const fieldLabel = Color(0xFF49454F);
+
+  /// Open country list under the dropdown.
+  static const countryListBackground = Color.fromRGBO(255, 255, 255, 0.5);
+  static const countryListDivider = Color(0xFFCAC4D0);
+
+  // Profile screen
+
+  /// Round badge with the scales on the welcome card.
+  static const profileBadge = Color(0xFF314D91);
+  static const profileCircle = Color.fromRGBO(255, 255, 255, 0.1);
+  static const profileCounter = Color(0xFF5167A7);
+  static const profileBarTrack = Color.fromRGBO(255, 255, 255, 0.2);
+  static const profileBarFill = Color(0xFF5D9B75);
+
+  /// The three statistics tiles, darkest first.
+  static const statCases = Color(0xFF304B85);
+  static const statAccuracy = Color(0xFF6579A6);
+  static const statStreak = Color(0xFF929FBC);
+
+  /// Dot in front of each previous case.
+  static const previousCaseDot = Color(0xFFA9A18F);
+
+  static const achievementCard = Color(0xFF929FBC);
+  static const achievementCardBorder = Color(0xFF8F9CB8);
+  static const achievementBadgeBorder = Color.fromRGBO(30, 20, 10, 0.1);
+
+  /// "0/8 unlocked".
+  static const achievementCount = Color(0xFF7C4F2A);
+
+  // Settings screen
+
+  /// "Preferences save automatically" note.
+  static const settingsNote = Color.fromRGBO(45, 106, 70, 0.1);
+  static const settingsNoteBorder = Color.fromRGBO(45, 106, 70, 0.2);
+
   // Case screen
 
   /// Secondary text: origin line, small labels, hints.

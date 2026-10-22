@@ -6,8 +6,9 @@ import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../providers/home_provider.dart';
+import '../../shared/widgets/app_logo.dart';
+import '../account/create_account_screen.dart';
 import '../home/home_screen.dart';
-import 'widgets/app_logo.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -34,12 +35,14 @@ class _SplashScreenState extends State<SplashScreen> {
       _loaded(home),
     ]);
     if (!mounted) return;
-    // TODO: once sign-in exists, open "Create account" when there is no
-    // player instead of the home screen.
+    // No one signed in on this phone yet: "Create account" first.
+    final next = home.status == HomeStatus.signedOut
+        ? const CreateAccountScreen()
+        : const HomeScreen();
     Navigator.of(context).pushReplacement(
       PageRouteBuilder<void>(
         transitionDuration: const Duration(milliseconds: 500),
-        pageBuilder: (context, animation, _) => const HomeScreen(),
+        pageBuilder: (context, animation, _) => next,
         transitionsBuilder: (context, animation, _, child) =>
             FadeTransition(opacity: animation, child: child),
       ),

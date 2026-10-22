@@ -62,6 +62,20 @@ dev_dependencies:
   fake_cloud_firestore: ^4.3.0
   firebase_auth_mocks: ^0.15.2
   mock_exceptions: ^0.8.2
+  flutter_launcher_icons: ^0.14.4
+
+# App icon: the courthouse logo on the splash beige. After changing the
+# images, regenerate with `dart run flutter_launcher_icons`.
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/launcher/icon.png
+  # Android 8+ crops a foreground over a background into the phone's shape.
+  adaptive_icon_background: "#DFDACD"
+  adaptive_icon_foreground: assets/launcher/icon_foreground.png
+  # The foreground image already keeps the gavel inside the safe zone.
+  adaptive_icon_foreground_inset: 0
+  remove_alpha_ios: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
