@@ -20,6 +20,7 @@ class FirestoreGameRepository implements GameRepository {
   CollectionReference<Map<String, dynamic>> get _cases => _db.collection('cases');
   CollectionReference<Map<String, dynamic>> get _verdicts => _db.collection('verdicts');
   CollectionReference<Map<String, dynamic>> get _users => _db.collection('users');
+  CollectionReference<Map<String, dynamic>> get _usernames => _db.collection('usernames');
 
   String get _uid => _auth.currentUser?.uid ?? (throw StateError('No player: sign in first'));
   DocumentReference<Map<String, dynamic>> get _userDoc => _users.doc(_uid);
@@ -49,24 +50,48 @@ class FirestoreGameRepository implements GameRepository {
   }) async {
     Usernames.check(username, password);
     final id = Usernames.normalize(username);
-    final credential = await _account(
-        () => _auth.createUserWithEmailAndPassword(email: Usernames.email(id), password: password));
+    if ((await _usernames.doc(id).get()).exists) throw const AccountException(AccountError.usernameTaken);
+    final email = Usernames.newEmail();
+    final user = (await _account(() => _auth.createUserWithEmailAndPassword(email: email, password: password))).user!;
     final profile = PlayerProfile(
-      uid: credential.user!.uid,
+      uid: user.uid,
       name: name.trim(),
       username: id,
       countryCode: countryCode,
       createdAt: DateTime.now(),
     );
-    await _users.doc(profile.uid).set(profile.toMap());
+    try {
+      await _db.runTransaction((tx) async {
+        if ((await tx.get(_usernames.doc(id))).exists) throw const AccountException(AccountError.usernameTaken);
+        tx
+          ..set(_usernames.doc(id), {'uid': user.uid, 'email': email})
+          ..set(_users.doc(user.uid), profile.toMap());
+      });
+    } catch (_) {
+      await user.delete();
+      rethrow;
+    }
     return profile;
   }
 
+  /// Accounts created before `usernames/` have no entry there: they log in with [Usernames.legacyEmail]
+  /// and claim their username on the way.
   @override
   Future<PlayerProfile> signIn({required String username, required String password}) async {
     if (!Usernames.isValid(username)) throw const AccountException(AccountError.wrongCredentials);
-    await _account(() => _auth.signInWithEmailAndPassword(email: Usernames.email(username), password: password));
-    return _requirePlayer();
+    final id = Usernames.normalize(username);
+    final entry = (await _usernames.doc(id).get()).data();
+    final email = entry?['email'] as String? ?? Usernames.legacyEmail(id);
+    await _account(() => _auth.signInWithEmailAndPassword(email: email, password: password));
+    final player = await _requirePlayer();
+    if (entry == null) {
+      if (player.username != id) {
+        await signOut();
+        throw const AccountException(AccountError.wrongCredentials);
+      }
+      await _usernames.doc(id).set({'uid': player.uid, 'email': email});
+    }
+    return player;
   }
 
   @override
@@ -78,7 +103,13 @@ class FirestoreGameRepository implements GameRepository {
     final user = _auth.currentUser ?? (throw StateError('No player: sign in first'));
     await _account(() => user.reauthenticateWithCredential(
         EmailAuthProvider.credential(email: user.email!, password: password)));
-    final docs = [for (final d in (await _rulings.get()).docs) d.reference, _userDoc];
+    final player = await currentPlayer();
+    final entry = player == null ? null : await _usernames.doc(player.username).get();
+    final docs = [
+      for (final d in (await _rulings.get()).docs) d.reference,
+      if (entry?.data()?['uid'] == user.uid) entry!.reference,
+      _userDoc,
+    ];
     for (var i = 0; i < docs.length; i += 500) {
       final batch = _db.batch();
       for (final doc in docs.skip(i).take(500)) {
@@ -126,6 +157,29 @@ class FirestoreGameRepository implements GameRepository {
     final player = await _requirePlayer();
     await _userDoc.update({'preferences': preferences.toMap()});
     return player.copyWith(preferences: preferences);
+  }
+
+  /// A new username moves the player's `usernames/` entry in a transaction, so two players cannot
+  /// take the same one.
+  @override
+  Future<PlayerProfile> updateProfile({String? name, String? username}) async {
+    final player = await _requirePlayer();
+    final updated = player.copyWith(name: name?.trim(), username: username == null ? null : Usernames.normalize(username));
+    if (updated.username == player.username) {
+      await _userDoc.update({'name': updated.name});
+      return updated;
+    }
+    if (!Usernames.isValid(updated.username)) throw const AccountException(AccountError.invalidUsername);
+    await _db.runTransaction((tx) async {
+      final taken = await tx.get(_usernames.doc(updated.username));
+      final old = await tx.get(_usernames.doc(player.username));
+      if (taken.exists) throw const AccountException(AccountError.usernameTaken);
+      tx
+        ..set(taken.reference, {'uid': player.uid, 'email': _auth.currentUser!.email})
+        ..update(_userDoc, {'name': updated.name, 'username': updated.username});
+      if (old.data()?['uid'] == player.uid) tx.delete(old.reference);
+    });
+    return updated;
   }
 
   /// One count query per category, each billed as a single read.

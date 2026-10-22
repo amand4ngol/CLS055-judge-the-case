@@ -35,6 +35,10 @@ abstract interface class GameRepository {
   /// Settings and the trigger warning checkbox.
   Future<PlayerProfile> savePreferences(ContentPreferences preferences);
 
+  /// "Edit information": changes the name and/or the username, then the player logs in with the new
+  /// username. Throws [AccountException] for a taken or invalid username, as on "Create account".
+  Future<PlayerProfile> updateProfile({String? name, String? username});
+
   /// Category chips: categories with at least one published case.
   Future<List<CaseCategory>> categories(String countryCode);
 

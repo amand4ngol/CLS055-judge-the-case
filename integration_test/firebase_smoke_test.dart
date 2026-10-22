@@ -16,9 +16,10 @@ void main() {
     final db = FirebaseFirestore.instance;
     final repo = FirestoreGameRepository();
     const password = 'smoke-test-1';
+    final username = 'smoke-${DateTime.now().millisecondsSinceEpoch.toRadixString(36)}';
     await repo.createPlayer(
       name: 'Smoke test',
-      username: 'smoke-${DateTime.now().millisecondsSinceEpoch}',
+      username: username,
       password: password,
       countryCode: 'NL',
     );
@@ -40,6 +41,10 @@ void main() {
       expect((await repo.completedRulings()).single.caseId, next.id);
       expect((await repo.reviseCase(next.id)).ruling.isCompleted, isTrue);
       expect((await repo.currentPlayer())!.stats.casesJudged, 1);
+
+      await repo.updateProfile(username: '$username-b');
+      await repo.signOut();
+      expect((await repo.signIn(username: '$username-b', password: password)).stats.casesJudged, 1);
     } finally {
       await repo.deleteAccount(password: password);
     }

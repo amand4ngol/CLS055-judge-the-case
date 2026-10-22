@@ -22,8 +22,28 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)/rulings/$(caseId)).data.status == 'completed';
     }
 
+    // Which account each username logs in to, read before signing in. A username changes owner
+    // only by being deleted and created again, and a player only creates entries for themself.
+    match /usernames/{username} {
+      allow get: if true;
+      allow create: if signedIn()
+        && username.matches('[a-z0-9._-]{3,20}')
+        && request.resource.data.keys().hasOnly(['uid', 'email'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email == request.auth.token.email;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
     match /users/{uid} {
-      allow read, write: if signedIn() && request.auth.uid == uid;
+      // The profile's username is one the player owns in usernames/, or did not change.
+      function ownsUsername() {
+        let username = request.resource.data.get('username', null);
+        return (resource != null && username == resource.data.get('username', null))
+          || getAfter(/databases/$(database)/documents/usernames/$(username)).data.uid == uid;
+      }
+
+      allow read, delete: if signedIn() && request.auth.uid == uid;
+      allow create, update: if signedIn() && request.auth.uid == uid && ownsUsername();
 
       match /rulings/{caseId} {
         allow read, write: if signedIn() && request.auth.uid == uid;

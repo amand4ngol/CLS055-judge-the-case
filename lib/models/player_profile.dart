@@ -46,6 +46,7 @@ class PlayerProfile {
 
   PlayerProfile copyWith({
     String? name,
+    String? username,
     String? countryCode,
     ContentPreferences? preferences,
     PlayerStats? stats,
@@ -54,7 +55,7 @@ class PlayerProfile {
       PlayerProfile(
         uid: uid,
         name: name ?? this.name,
-        username: username,
+        username: username ?? this.username,
         countryCode: countryCode ?? this.countryCode,
         preferences: preferences ?? this.preferences,
         stats: stats ?? this.stats,

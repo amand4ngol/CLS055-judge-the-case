@@ -94,6 +94,27 @@ void repositoryContract(String name, Future<GameRepository> Function() create) {
       expect(player.countryCode, 'PT');
     });
 
+    test('"Edit information" changes the name and the username, and frees the old username', () async {
+      await repo.deliverVerdict(await caseOf(FakeData.whistleblowerId),
+          const PlayerVerdict(options: {VerdictOption.communityService}));
+      expect((await repo.updateProfile(name: ' Bella ')).displayName, 'Judge Bella');
+      final player = await repo.updateProfile(username: ' Bella ');
+      expect((player.name, player.username), ('Bella', 'bella'));
+      await expectLater(repo.updateProfile(username: 'a b'), throwsAccountError(AccountError.invalidUsername));
+
+      await repo.signOut();
+      await expectLater(
+          repo.signIn(username: 'isabella', password: 'secret1'), throwsAccountError(AccountError.wrongCredentials));
+      final back = await repo.signIn(username: 'bella', password: 'secret1');
+      expect((back.name, back.stats.casesJudged), ('Bella', 1));
+
+      await repo.createPlayer(name: 'Isa', username: 'isabella', password: 'secret2', countryCode: 'NL');
+      expect(await repo.completedRulings(), isEmpty);
+      await expectLater(repo.updateProfile(username: 'bella'), throwsAccountError(AccountError.usernameTaken));
+      await expectLater(repo.createPlayer(name: 'B', username: 'Bella', password: 'secret3', countryCode: 'NL'),
+          throwsAccountError(AccountError.usernameTaken));
+    });
+
     test('signing out and in again keeps the progress', () async {
       await repo.deliverVerdict(await caseOf(FakeData.whistleblowerId),
           const PlayerVerdict(options: {VerdictOption.communityService}));
