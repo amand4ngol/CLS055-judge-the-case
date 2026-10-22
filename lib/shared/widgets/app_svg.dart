@@ -19,6 +19,7 @@ class AppSvg extends StatelessWidget {
   Widget build(BuildContext context) {
     return SvgPicture.asset(
       assetPath,
+      key: ValueKey(assetPath),
       fit: fit,
       excludeFromSemantics: excludeFromSemantics,
       errorBuilder: (context, error, stackTrace) =>

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_assets.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../models.dart';
-import '../../../shared/widgets/app_svg.dart';
+import '../../../shared/widgets/flag_icon.dart';
 import '../../../shared/widgets/profile_button.dart';
 import '../../../shared/widgets/tap_target.dart';
 
@@ -52,11 +51,7 @@ class HomeHeader extends StatelessWidget {
                   dimension: 40,
                   child: Padding(
                     padding: const EdgeInsets.only(top: 5.90, bottom: 6.60),
-                    child: AppSvg(
-                      AppAssets.flag(country.code),
-                      excludeFromSemantics: true,
-                      fallback: FittedBox(child: Text(country.flag)),
-                    ),
+                    child: FlagIcon(country.code),
                   ),
                 ),
               ),
