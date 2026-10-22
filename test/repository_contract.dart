@@ -15,6 +15,9 @@ void repositoryContract(String name, Future<GameRepository> Function() create) {
 
     Future<CourtCase> caseOf(String id) => repo.caseById(id);
 
+    Matcher throwsAccountError(AccountError error) =>
+        throwsA(isA<AccountException>().having((e) => e.error, 'error', error));
+
     test('a new player gets the categories, then a next case and locked ones', () async {
       final player = (await repo.currentPlayer())!;
       expect((player.name, player.username, player.countryCode), ('Isabella', 'isabella', 'NL'));
@@ -91,6 +94,27 @@ void repositoryContract(String name, Future<GameRepository> Function() create) {
       expect(player.countryCode, 'PT');
     });
 
+    test('"Edit information" changes the name and the username, and frees the old username', () async {
+      await repo.deliverVerdict(await caseOf(FakeData.whistleblowerId),
+          const PlayerVerdict(options: {VerdictOption.communityService}));
+      expect((await repo.updateProfile(name: ' Bella ')).displayName, 'Judge Bella');
+      final player = await repo.updateProfile(username: ' Bella ');
+      expect((player.name, player.username), ('Bella', 'bella'));
+      await expectLater(repo.updateProfile(username: 'a b'), throwsAccountError(AccountError.invalidUsername));
+
+      await repo.signOut();
+      await expectLater(
+          repo.signIn(username: 'isabella', password: 'secret1'), throwsAccountError(AccountError.wrongCredentials));
+      final back = await repo.signIn(username: 'bella', password: 'secret1');
+      expect((back.name, back.stats.casesJudged), ('Bella', 1));
+
+      await repo.createPlayer(name: 'Isa', username: 'isabella', password: 'secret2', countryCode: 'NL');
+      expect(await repo.completedRulings(), isEmpty);
+      await expectLater(repo.updateProfile(username: 'bella'), throwsAccountError(AccountError.usernameTaken));
+      await expectLater(repo.createPlayer(name: 'B', username: 'Bella', password: 'secret3', countryCode: 'NL'),
+          throwsAccountError(AccountError.usernameTaken));
+    });
+
     test('signing out and in again keeps the progress', () async {
       await repo.deliverVerdict(await caseOf(FakeData.whistleblowerId),
           const PlayerVerdict(options: {VerdictOption.communityService}));
@@ -99,6 +123,22 @@ void repositoryContract(String name, Future<GameRepository> Function() create) {
       final back = await repo.signIn(username: 'Isabella', password: 'secret1');
       expect(back.stats.casesJudged, 1);
       expect(await repo.completedRulings(), hasLength(1));
+    });
+
+    test('deleting the account erases the player and frees the username', () async {
+      await repo.deliverVerdict(await caseOf(FakeData.whistleblowerId),
+          const PlayerVerdict(options: {VerdictOption.communityService}));
+      await expectLater(repo.deleteAccount(password: 'wrong!'), throwsAccountError(AccountError.wrongCredentials));
+      expect((await repo.currentPlayer())!.stats.casesJudged, 1);
+
+      await repo.deleteAccount(password: 'secret1');
+      expect(await repo.currentPlayer(), isNull);
+      await expectLater(
+          repo.signIn(username: 'isabella', password: 'secret1'), throwsAccountError(AccountError.wrongCredentials));
+
+      await repo.createPlayer(name: 'Isabella', username: 'isabella', password: 'secret2', countryCode: 'NL');
+      expect((await repo.currentPlayer())!.stats.toMap(), PlayerStats.zero.toMap());
+      expect(await repo.completedRulings(), isEmpty);
     });
   });
 }

@@ -24,12 +24,20 @@ abstract interface class GameRepository {
 
   Future<void> signOut();
 
+  /// "Delete account": deletes the player's rulings, profile and account, then signs out.
+  /// The password is asked again; a wrong one throws [AccountException] ([AccountError.wrongCredentials]).
+  Future<void> deleteAccount({required String password});
+
   /// Country picker: also changes the country the player rules in.
   Future<List<Country>> countries();
   Future<PlayerProfile> setCountry(String countryCode);
 
   /// Settings and the trigger warning checkbox.
   Future<PlayerProfile> savePreferences(ContentPreferences preferences);
+
+  /// "Edit information": changes the name and/or the username, then the player logs in with the new
+  /// username. Throws [AccountException] for a taken or invalid username, as on "Create account".
+  Future<PlayerProfile> updateProfile({String? name, String? username});
 
   /// Category chips: categories with at least one published case.
   Future<List<CaseCategory>> categories(String countryCode);

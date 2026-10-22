@@ -10,7 +10,9 @@ import 'package:http/http.dart' as http;
 void main() {
   final host = Platform.environment['FIRESTORE_EMULATOR_HOST'];
   const project = 'demo-judge-the-case';
-  final base = 'http://$host/v1/projects/$project/databases/(default)/documents';
+  const documents = 'projects/$project/databases/(default)/documents';
+  final base = 'http://$host/v1/$documents';
+  String email(String uid) => '$uid@users.judge-the-case.app';
 
   /// An unsigned ID token, which the emulator accepts for any user.
   String token(String uid) {
@@ -21,6 +23,7 @@ void main() {
       'aud': project,
       'sub': uid,
       'user_id': uid,
+      'email': email(uid),
       'iat': now,
       'exp': now + 3600,
       'auth_time': now,
@@ -42,6 +45,20 @@ void main() {
 
   Future<int> read(String path, {required String? as}) async =>
       (await http.get(Uri.parse('$base/$path'), headers: headers(as))).statusCode;
+
+  Future<int> remove(String path, {required String? as}) async =>
+      (await http.delete(Uri.parse('$base/$path'), headers: headers(as))).statusCode;
+
+  /// Several writes in one atomic commit, as a batch or a transaction of the app.
+  Future<int> commit(List<Map<String, dynamic>> writes, {required String? as}) async =>
+      (await http.post(Uri.parse('$base:commit'), headers: headers(as), body: jsonEncode({'writes': writes})))
+          .statusCode;
+
+  Map<String, dynamic> set(String path, Map<String, String> values) => {
+        'update': {'name': '$documents/$path', ...fields(values)},
+      };
+
+  Map<String, dynamic> delete(String path) => {'delete': '$documents/$path'};
 
   Future<int> queryPublishedCases({required String? as, bool filtered = true}) async {
     final body = {
@@ -101,6 +118,49 @@ void main() {
       expect(await read('users/alice', as: 'bob'), 403);
       expect(await write('users/alice', {'name': 'Hacked'}, as: 'bob'), 403);
       expect(await write('users/alice/rulings/C1', {'status': 'completed'}, as: 'bob'), 403);
+    });
+
+    test('anyone can look a username up, nobody can list them', () async {
+      await write('usernames/alice', {'uid': 'alice', 'email': email('alice')}, as: 'owner');
+      expect(await read('usernames/alice', as: null), 200);
+      expect(await read('usernames/nobody', as: null), 404);
+      expect(await read('usernames', as: 'alice'), 403);
+    });
+
+    test('a player claims a free username for themself, and only deletes their own', () async {
+      expect(await write('usernames/alice', {'uid': 'alice', 'email': email('alice')}, as: null), 403);
+      expect(await write('usernames/alice', {'uid': 'bob', 'email': email('bob')}, as: 'alice'), 403);
+      expect(await write('usernames/alice', {'uid': 'alice', 'email': email('bob')}, as: 'alice'), 403);
+      expect(await write('usernames/Alice', {'uid': 'alice', 'email': email('alice')}, as: 'alice'), 403);
+      expect(await write('usernames/alice', {'uid': 'alice', 'email': email('alice')}, as: 'alice'), 200);
+      expect(await write('usernames/alice', {'uid': 'bob', 'email': email('bob')}, as: 'bob'), 403);
+      expect(await write('usernames/alice', {'uid': 'alice', 'email': email('alice')}, as: 'alice'), 403);
+      expect(await remove('usernames/alice', as: 'bob'), 403);
+      expect(await remove('usernames/alice', as: 'alice'), 200);
+    });
+
+    test('a profile only gets a username its player owns', () async {
+      await write('usernames/bob', {'uid': 'bob', 'email': email('bob')}, as: 'owner');
+      expect(await write('users/carol', {'name': 'Carol', 'username': 'carol'}, as: 'carol'), 403);
+      expect(await write('users/carol', {'name': 'Carol', 'username': 'bob'}, as: 'carol'), 403);
+      expect(
+        await commit([
+          set('usernames/carol', {'uid': 'carol', 'email': email('carol')}),
+          set('users/carol', {'name': 'Carol', 'username': 'carol'}),
+        ], as: 'carol'),
+        200,
+      );
+      expect(await write('users/carol', {'name': 'Carol B.', 'username': 'carol'}, as: 'carol'), 200);
+      expect(await write('users/carol', {'name': 'Carol', 'username': 'bob'}, as: 'carol'), 403);
+      expect(
+        await commit([
+          set('usernames/caro', {'uid': 'carol', 'email': email('carol')}),
+          delete('usernames/carol'),
+          set('users/carol', {'name': 'Carol', 'username': 'caro'}),
+        ], as: 'carol'),
+        200,
+      );
+      expect(await read('usernames/carol', as: null), 404);
     });
 
     test('the pipeline collections cannot be read or written by players', () async {

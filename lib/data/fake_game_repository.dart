@@ -45,6 +45,7 @@ class FakeGameRepository implements GameRepository {
   final _passwords = <String, String>{};
   final _profiles = <String, PlayerProfile>{};
   PlayerProfile? _player;
+  var _accountsCreated = 0;
 
   Map<String, Map<String, dynamic>> get _rulings => _rulingsByUid.putIfAbsent(_requirePlayer.uid, () => {});
 
@@ -93,7 +94,7 @@ class FakeGameRepository implements GameRepository {
     await signOut();
     _passwords[id] = password;
     return _player = PlayerProfile(
-      uid: 'fake-$id',
+      uid: 'fake-${++_accountsCreated}-$id',
       name: name.trim(),
       username: id,
       countryCode: countryCode,
@@ -119,6 +120,17 @@ class FakeGameRepository implements GameRepository {
   }
 
   @override
+  Future<void> deleteAccount({required String password}) async {
+    await _wait();
+    final player = _requirePlayer;
+    if (_passwords[player.username] != password) throw const AccountException(AccountError.wrongCredentials);
+    _passwords.remove(player.username);
+    _profiles.remove(player.username);
+    _rulingsByUid.remove(player.uid);
+    _player = null;
+  }
+
+  @override
   Future<List<Country>> countries() async {
     await _wait();
     return [for (final e in _countries.entries) Country.fromFirestore(e.key, e.value)];
@@ -134,6 +146,20 @@ class FakeGameRepository implements GameRepository {
   Future<PlayerProfile> savePreferences(ContentPreferences preferences) async {
     await _wait();
     return _player = _requirePlayer.copyWith(preferences: preferences);
+  }
+
+  @override
+  Future<PlayerProfile> updateProfile({String? name, String? username}) async {
+    await _wait();
+    final player = _requirePlayer;
+    final updated = player.copyWith(name: name?.trim(), username: username == null ? null : Usernames.normalize(username));
+    if (updated.username != player.username) {
+      if (!Usernames.isValid(updated.username)) throw const AccountException(AccountError.invalidUsername);
+      if (_passwords.containsKey(updated.username)) throw const AccountException(AccountError.usernameTaken);
+      _passwords[updated.username] = _passwords.remove(player.username)!;
+      _profiles.remove(player.username);
+    }
+    return _player = updated;
   }
 
   @override

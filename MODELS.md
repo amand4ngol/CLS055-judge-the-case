@@ -110,6 +110,7 @@ final player = await repo.createPlayer(
 
 - `currentPlayer()` returns `null` when no one is signed in: use it to decide whether to show this screen. Firebase keeps the player signed in between launches.
 - Players log in with their **username and password** (no email in the design): `repo.signIn(username:, password:)`. `repo.signOut()` logs out.
+- "Delete account" (on screen 10 Profile or 11 Settings, required by the App Store): ask for the password again, then `await repo.deleteAccount(password: password)`. It deletes the player's games, profile and account, then signs out: go back to this screen. The username becomes free again. Ask the player to confirm first: it cannot be undone.
 - Usernames: 3 to 20 characters among `a-z`, `0-9`, `.`, `_`, `-`, stored in lower case (`Usernames.isValid`). Passwords: at least 6 characters (`Usernames.minPasswordLength`).
 - The password goes to Firebase Auth only. It is never stored in the profile. There is no "forgot password" (no email to send it to).
 - Errors come as `AccountException`, whose `error` tells the screen what to show:
@@ -119,7 +120,7 @@ final player = await repo.createPlayer(
 | `invalidUsername` | the username breaks the rules above |
 | `weakPassword` | the password is too short |
 | `usernameTaken` | another player already has this username |
-| `wrongCredentials` | log-in with a wrong username or password |
+| `wrongCredentials` | log-in with a wrong username or password, or "Delete account" with a wrong password |
 | `network` | no connection, or too many attempts: try again later |
 
 ### 02 Country picker
@@ -516,6 +517,7 @@ The thresholds and the correctness rule are first choices; they may still change
 | `createPlayer(name:, username:, password:, countryCode:)` | `PlayerProfile`, signed in | 01 |
 | `signIn(username:, password:)` | `PlayerProfile` | log-in |
 | `signOut()` | — | profile, settings |
+| `deleteAccount(password:)` | — (signed out) | 10, 11 |
 | `countries()` | `List<Country>` | 02 |
 | `setCountry(code)` | `PlayerProfile` | 02 |
 | `savePreferences(prefs)` | `PlayerProfile` | 07, 11 |
@@ -595,7 +597,7 @@ Oman and Portugal have no cases: use them to build the empty state.
 | `reviseCase` on a case that is not completed | `StateError`: the court's verdict stays hidden |
 | `caseById` with an unknown id | `StateError` |
 | Any method that needs a player, called when no one is signed in | `StateError` |
-| `createPlayer` or `signIn` with a bad username, password or connection | `AccountException` (see screen 01) |
+| `createPlayer`, `signIn` or `deleteAccount` with a bad username, password or connection | `AccountException` (see screen 01) |
 
 If your screens follow the slot states and only enable "Deliver Verdict" when `verdict.isComplete`, none of these should happen. They are safety nets.
 
