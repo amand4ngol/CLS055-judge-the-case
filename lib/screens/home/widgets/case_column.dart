@@ -5,6 +5,7 @@ import '../../../models.dart';
 import '../../../shared/widgets/app_svg.dart';
 import 'case_title_card.dart';
 import 'medallions/completed_medallion.dart';
+import 'medallions/continue_medallion.dart';
 import 'medallions/locked_medallion.dart';
 import 'medallions/next_case_medallion.dart';
 
@@ -85,11 +86,18 @@ class CaseColumn extends StatelessWidget {
           onTap: onTap,
         ),
       ),
-      // TODO: in-progress cases get their own "CONTINUE" medallion
-      CaseSlotState.next || CaseSlotState.inProgress => Positioned(
+      CaseSlotState.next => Positioned(
         left: 25,
         top: _medallionTop,
         child: NextCaseMedallion(onTap: onTap),
+      ),
+      CaseSlotState.inProgress => Positioned(
+        left: (width - ContinueMedallion.size) / 2,
+        top: _medallionTop,
+        child: ContinueMedallion(
+          progress: slot.ruling?.progress ?? 0,
+          onTap: onTap,
+        ),
       ),
       CaseSlotState.locked => Positioned(
         left: 34.23,

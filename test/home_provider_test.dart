@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:judge_the_case/data/fake_game_repository.dart';
 import 'package:judge_the_case/models.dart';
-import 'package:judge_the_case/providers/case_provider.dart';
 import 'package:judge_the_case/providers/home_provider.dart';
 
 void main() {
@@ -64,7 +63,9 @@ void main() {
   test('a category with only sensitive cases is reported as hidden', () async {
     final home = HomeProvider(await FakeGameRepository.withHistory());
     await home.load();
-    await home.afterCase(const CaseExit(hideSensitiveCases: true));
+    await home.setPreferences(
+      home.player!.preferences.copyWith(hideSensitiveCases: true),
+    );
 
     // Every homicide case in the fake data has content warnings.
     await home.selectCategory(home.categories.indexOf(CaseCategory.homicide));

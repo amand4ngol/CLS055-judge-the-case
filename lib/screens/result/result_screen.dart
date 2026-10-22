@@ -9,6 +9,7 @@ import '../case/widgets/arguments_section.dart';
 import '../case/widgets/case_summary_section.dart';
 import '../case/widgets/case_title_section.dart';
 import '../case/widgets/charges_panel.dart';
+import '../profile/profile_screen.dart';
 import 'widgets/court_decision.dart';
 import 'widgets/outcome_banner.dart';
 import 'widgets/result_header.dart';
@@ -60,8 +61,8 @@ class _ResultScreenState extends State<ResultScreen> {
               isRecap: isRecap,
               onBack: () =>
                   Navigator.of(context).pop(isRecap ? null : ResultAction.home),
-              // TODO: open the profile screen.
-              onProfile: () {},
+              onProfile: () =>
+                  Navigator.of(context).push(ProfileScreen.route()),
             ),
             Expanded(
               child: SingleChildScrollView(

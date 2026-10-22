@@ -103,6 +103,13 @@ class HomeProvider extends ChangeNotifier {
     _notify();
   }
 
+  /// Settings > "Edit information": pass only what the player edited.
+  /// Throws [AccountException] for a taken or invalid username.
+  Future<void> updateProfile({String? name, String? username}) async {
+    _player = await _repository.updateProfile(name: name, username: username);
+    _notify();
+  }
+
   /// Categories of the player's country and the column of the first one.
   Future<void> _loadCategories() async {
     final countryCode = _player!.countryCode;
@@ -124,13 +131,12 @@ class HomeProvider extends ChangeNotifier {
     await refreshCases();
   }
 
-  /// Called when the player comes back from a case: saves the trigger
-  /// warning choice, then reloads the column (the case may now be completed
-  /// or hidden).
+  /// Called when the player comes back from a case: saves "Do not show this
+  /// warning again", then reloads the column (the case may now be completed).
   Future<void> afterCase(CaseExit? exit) async {
     final preferences = _player?.preferences;
-    if (preferences != null && (exit?.hideSensitiveCases ?? false)) {
-      await _savePreferences(preferences.copyWith(hideSensitiveCases: true));
+    if (preferences != null && (exit?.turnOffTriggerWarnings ?? false)) {
+      await _savePreferences(preferences.copyWith(showTriggerWarnings: false));
     }
     await refreshCases();
   }
@@ -167,11 +173,11 @@ class HomeProvider extends ChangeNotifier {
   bool get isCategoryHidden =>
       !_isLoadingCases && _categories.isNotEmpty && _cases.isEmpty;
 
-  /// "Do not show me sensitive cases again" is on.
+  /// Settings > "Hide all sensitive cases" is on.
   bool get hidesSensitiveCases =>
       _player?.preferences.hideSensitiveCases ?? false;
 
-  /// Turns "Do not show me sensitive cases again" back off.
+  /// Turns "Hide all sensitive cases" back off.
   Future<void> showSensitiveCases() async {
     final preferences = _player?.preferences;
     if (preferences == null) return;

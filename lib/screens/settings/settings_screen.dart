@@ -8,8 +8,13 @@ import '../../models.dart';
 import '../../providers/account_provider.dart';
 import '../../providers/home_provider.dart';
 import '../../shared/widgets/app_svg.dart';
+import '../account/create_account_screen.dart';
 import '../account/log_in_screen.dart';
+import 'widgets/delete_account_dialog.dart';
+import 'widgets/edit_information_dialog.dart';
 import 'widgets/sensitive_filter.dart';
+import 'widgets/settings_dialog.dart';
+import 'widgets/trigger_warnings_switch.dart';
 
 /// Content preferences, account editing and sign out.
 class SettingsScreen extends StatelessWidget {
@@ -51,6 +56,13 @@ class SettingsScreen extends StatelessWidget {
                     preferences: preferences,
                     onChanged: home.setPreferences,
                   ),
+                  const SizedBox(height: 8),
+                  TriggerWarningsSwitch(
+                    value: preferences.showTriggerWarnings,
+                    onChanged: (value) => home.setPreferences(
+                      preferences.copyWith(showTriggerWarnings: value),
+                    ),
+                  ),
                   const SizedBox(height: 13),
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -86,6 +98,27 @@ class SettingsScreen extends StatelessWidget {
                         Text(
                           'Edit information',
                           style: AppTextStyles.settingsItem,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _button(
+                    onTap: () => _deleteAccount(context),
+                    radius: 8,
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.delete_outline,
+                          size: 24,
+                          color: AppColors.resultIncorrect,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Delete account',
+                          style: AppTextStyles.settingsItem.copyWith(
+                            color: AppColors.resultIncorrect,
+                          ),
                         ),
                       ],
                     ),
@@ -138,7 +171,8 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  /// Beige 56 px button of "Edit information" and "Sign out".
+  /// Beige 56 px button of "Edit information", "Delete account" and "Sign
+  /// out".
   Widget _button({
     required VoidCallback onTap,
     required double radius,
@@ -159,83 +193,25 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _dialogButton({
-    required String label,
-    required Color color,
-    required Color textColor,
-    required VoidCallback onTap,
-  }) {
-    return Material(
-      color: color,
-      borderRadius: BorderRadius.circular(8),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: SizedBox(
-          height: 48,
-          child: Center(
-            child: Text(
-              label,
-              style: AppTextStyles.settingsItem.copyWith(color: textColor),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _editInformation(BuildContext context) {
-    // TODO: the repository cannot change a name or username yet, and the
-    // edit screen is not designed.
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Editing your information is coming soon.')),
-    );
+  Future<void> _editInformation(BuildContext context) async {
+    final player = context.read<HomeProvider>().player;
+    if (player == null) return;
+    final saved = await EditInformationDialog.show(context, player);
+    if (saved != true || !context.mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Your information is saved.')));
   }
 
   Future<void> _confirmSignOut(BuildContext context) async {
     final signOut = await showDialog<bool>(
       context: context,
-      builder: (context) => Dialog(
-        backgroundColor: AppColors.beige,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Sign out?', style: AppTextStyles.title),
-              const SizedBox(height: 8),
-              Text(
-                'You can log back in any time with your username and '
-                'password.',
-                style: AppTextStyles.settingsBody,
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: _dialogButton(
-                      label: 'Cancel',
-                      color: AppColors.argumentCard,
-                      textColor: AppColors.countryPickerName,
-                      onTap: () => Navigator.of(context).pop(false),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _dialogButton(
-                      label: 'Sign out',
-                      color: AppColors.blue,
-                      textColor: AppColors.white,
-                      onTap: () => Navigator.of(context).pop(true),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
+      builder: (context) => SettingsDialog(
+        title: 'Sign out?',
+        message:
+            'You can log back in any time with your username and password.',
+        actionLabel: 'Sign out',
+        onAction: () => Navigator.of(context).pop(true),
       ),
     );
     if (signOut != true || !context.mounted) return;
@@ -245,5 +221,16 @@ class SettingsScreen extends StatelessWidget {
     await context.read<AccountProvider>().signOut();
     await home.load();
     navigator.pushAndRemoveUntil(LogInScreen.route(), (_) => false);
+  }
+
+  /// The dialog deletes the account and signs out; then, as after "Sign
+  /// out", home reloads and the player starts over on "Create account".
+  Future<void> _deleteAccount(BuildContext context) async {
+    final deleted = await DeleteAccountDialog.show(context);
+    if (deleted != true || !context.mounted) return;
+
+    final navigator = Navigator.of(context);
+    await context.read<HomeProvider>().load();
+    navigator.pushAndRemoveUntil(CreateAccountScreen.route(), (_) => false);
   }
 }

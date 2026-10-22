@@ -7,15 +7,14 @@ enum CaseScreenStatus { loading, warning, ready, error }
 
 /// What the case screen hands back to the home screen when it closes.
 class CaseExit {
-  const CaseExit({this.result, this.hideSensitiveCases = false});
+  const CaseExit({this.result, this.turnOffTriggerWarnings = false});
 
   /// Set when the player delivered a verdict.
   final RulingResult? result;
 
-  /// The player ticked "Do not show me sensitive cases again". Saved by the
-  /// home screen after leaving: saving it now would hide (and lock) the case
-  /// the player is in.
-  final bool hideSensitiveCases;
+  /// The player ticked "Do not show this warning again", then entered the
+  /// case. Saved by the home screen, which owns the player's preferences.
+  final bool turnOffTriggerWarnings;
 }
 
 /// State of one case screen: the case, the player's ruling in progress and
@@ -33,7 +32,8 @@ class CaseProvider extends ChangeNotifier {
   PlayerVerdict _verdict = PlayerVerdict.empty;
   int _argumentPage = 0;
   bool _showLongSummary = false;
-  bool _hideSensitiveCases = false;
+  bool _dontShowWarningAgain = false;
+  bool _turnOffTriggerWarnings = false;
   bool _isDelivering = false;
   RulingResult? _result;
   bool _disposed = false;
@@ -45,7 +45,8 @@ class CaseProvider extends ChangeNotifier {
   CourtCase get courtCase => _courtCase!;
   PlayerVerdict get verdict => _verdict;
   bool get showLongSummary => _showLongSummary;
-  bool get hideSensitiveCases => _hideSensitiveCases;
+  /// The trigger warning's checkbox.
+  bool get dontShowWarningAgain => _dontShowWarningAgain;
   bool get isDelivering => _isDelivering;
 
   /// Saved progress: the most arguments ever reached, never lowered.
@@ -58,7 +59,7 @@ class CaseProvider extends ChangeNotifier {
   bool get canDeliver => _verdict.isComplete && !_isDelivering;
 
   CaseExit get exit =>
-      CaseExit(result: _result, hideSensitiveCases: _hideSensitiveCases);
+      CaseExit(result: _result, turnOffTriggerWarnings: _turnOffTriggerWarnings);
 
   /// Loads the case. Sensitive cases stop at the trigger warning; the
   /// ruling is only created once the player chooses to enter.
@@ -84,8 +85,10 @@ class CaseProvider extends ChangeNotifier {
     }
   }
 
-  /// "Enter anyways" on the trigger warning.
+  /// "Enter anyways" on the trigger warning. A ticked checkbox only counts
+  /// once the player enters: leaving with "Back" changes nothing.
   Future<void> enterCase() async {
+    _turnOffTriggerWarnings = _dontShowWarningAgain;
     _status = CaseScreenStatus.loading;
     _notify();
     try {
@@ -104,8 +107,8 @@ class CaseProvider extends ChangeNotifier {
     _notify();
   }
 
-  void setHideSensitiveCases(bool value) {
-    _hideSensitiveCases = value;
+  void setDontShowWarningAgain(bool value) {
+    _dontShowWarningAgain = value;
     _notify();
   }
 
