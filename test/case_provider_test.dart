@@ -39,9 +39,15 @@ void main() {
     final provider = CaseProvider(repo, FakeData.whistleblowerId);
     await provider.load();
 
-    provider.markArgumentsRead(2);
-    provider.markArgumentsRead(1); // swiping back does not lower progress
+    provider.showArgumentPage(2);
+    provider.showArgumentPage(1); // swiping back does not lower progress
     expect(provider.argumentsRead, 2);
+    expect(provider.argumentPage, 1); // but the progress bar follows the card
+
+    // Reopening the case starts at the furthest argument reached.
+    final reopened = CaseProvider(repo, FakeData.whistleblowerId);
+    await reopened.load();
+    expect(reopened.argumentPage, 2);
 
     provider.toggleOption(VerdictOption.fine);
     provider.setFine(36500);
