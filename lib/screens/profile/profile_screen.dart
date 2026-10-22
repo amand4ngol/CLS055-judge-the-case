@@ -28,13 +28,27 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   /// Loaded fresh, so the stats include the cases judged since home loaded.
-  late final Future<(PlayerProfile?, List<PlayerRuling>)> _data;
+  late Future<(PlayerProfile?, List<PlayerRuling>)> _data;
 
   @override
   void initState() {
     super.initState();
+    _data = _load();
+  }
+
+  Future<(PlayerProfile?, List<PlayerRuling>)> _load() {
     final repository = context.read<GameRepository>();
-    _data = (repository.currentPlayer(), repository.completedRulings()).wait;
+    return (repository.currentPlayer(), repository.completedRulings()).wait;
+  }
+
+  /// The name or username may have changed in the settings.
+  Future<void> _openSettings() async {
+    await Navigator.of(context).push(SettingsScreen.route());
+    // After "Sign out" or "Delete account" this page is being removed.
+    if (!mounted || !(ModalRoute.of(context)?.isCurrent ?? false)) return;
+    setState(() {
+      _data = _load();
+    });
   }
 
   Future<void> _preview(PlayerRuling ruling) async {
@@ -97,7 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           Text('MY PROFILE', style: AppTextStyles.profileHeader),
           GestureDetector(
-            onTap: () => Navigator.of(context).push(SettingsScreen.route()),
+            onTap: _openSettings,
             child: const SizedBox.square(
               dimension: 32,
               child: Center(

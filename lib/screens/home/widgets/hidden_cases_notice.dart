@@ -16,8 +16,8 @@ class HiddenCasesNotice extends StatelessWidget {
   /// "Homicide or Sexual Assault" or "Drug Offense", etc. Used in the body text.
   final String categoryLabel;
 
-  /// True when "Do not show me sensitive cases again" is on; false when only
-  /// specific topics are filtered in the settings.
+  /// True when "Hide all sensitive cases" is on; false when only specific
+  /// topics are filtered in the settings.
   final bool hidesSensitiveCases;
   final VoidCallback onShowSensitiveCases;
 

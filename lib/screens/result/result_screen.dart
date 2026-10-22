@@ -5,6 +5,7 @@ import '../../core/theme/app_text_styles.dart';
 import '../../models.dart';
 import '../../shared/widgets/legal_area_badge.dart';
 import '../../shared/widgets/primary_button.dart';
+import '../profile/profile_screen.dart';
 import 'widgets/court_decision.dart';
 import 'widgets/outcome_banner.dart';
 import 'widgets/result_header.dart';
@@ -36,8 +37,8 @@ class ResultScreen extends StatelessWidget {
           children: [
             ResultHeader(
               onHome: () => Navigator.of(context).pop(ResultAction.home),
-              // TODO: open the profile screen.
-              onProfile: () {},
+              onProfile: () =>
+                  Navigator.of(context).push(ProfileScreen.route()),
             ),
             Expanded(
               child: SingleChildScrollView(

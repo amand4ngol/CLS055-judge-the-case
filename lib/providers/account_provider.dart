@@ -90,6 +90,11 @@ class AccountProvider extends ChangeNotifier {
 
   Future<void> signOut() => _repository.signOut();
 
+  /// Settings > "Delete account". Throws [AccountException]
+  /// ([AccountError.wrongCredentials] for a wrong password).
+  Future<void> deleteAccount({required String password}) =>
+      _repository.deleteAccount(password: password);
+
   Future<bool> _submit(Future<void> Function() action) async {
     if (_isSubmitting) return false;
     _isSubmitting = true;

@@ -153,8 +153,8 @@ class _Warning extends StatelessWidget {
     final provider = context.watch<CaseProvider>();
     return TriggerWarning(
       warnings: provider.courtCase.contentWarnings,
-      hideSensitiveCases: provider.hideSensitiveCases,
-      onHideSensitiveCasesChanged: provider.setHideSensitiveCases,
+      dontShowAgain: provider.dontShowWarningAgain,
+      onDontShowAgainChanged: provider.setDontShowWarningAgain,
       onEnter: provider.enterCase,
     );
   }

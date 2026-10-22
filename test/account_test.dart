@@ -4,11 +4,13 @@ import 'package:judge_the_case/app.dart';
 import 'package:judge_the_case/core/constants/app_assets.dart';
 import 'package:judge_the_case/data/fake_data.dart';
 import 'package:judge_the_case/data/fake_game_repository.dart';
+import 'package:judge_the_case/data/game_repository.dart';
 import 'package:judge_the_case/screens/account/create_account_screen.dart';
 import 'package:judge_the_case/screens/account/log_in_screen.dart';
 import 'package:judge_the_case/screens/home/home_screen.dart';
 import 'package:judge_the_case/models.dart';
 import 'package:judge_the_case/screens/profile/profile_screen.dart';
+import 'package:judge_the_case/screens/result/result_screen.dart';
 import 'package:judge_the_case/screens/settings/settings_screen.dart';
 import 'package:judge_the_case/screens/splash/splash_screen.dart';
 import 'package:judge_the_case/shared/widgets/app_svg.dart';
@@ -195,6 +197,22 @@ void main() {
     return repository;
   }
 
+  testWidgets('the profile button on the result screen opens the profile', (
+    tester,
+  ) async {
+    final repository = await FakeGameRepository.withHistory();
+    await launch(tester, repository);
+    final result = await repository.reviseCase(FakeData.redLightId);
+    Navigator.of(
+      tester.element(find.byType(HomeScreen)),
+    ).push(ResultScreen.route(result));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.bySemanticsLabel('Open profile'));
+    await tester.pumpAndSettle();
+    expect(find.byType(ProfileScreen), findsOneWidget);
+  });
+
   testWidgets('the sensitive case filter saves the preferences', (
     tester,
   ) async {
@@ -211,6 +229,20 @@ void main() {
     expect(player?.preferences.filteredTopics, {ContentWarning.violence});
   });
 
+  testWidgets('the trigger warnings switch saves the preference', (
+    tester,
+  ) async {
+    final repository = await openSettings(tester);
+    expect(find.text('Shown before sensitive cases'), findsOneWidget);
+
+    await tester.tap(find.text('Trigger warnings'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Sensitive cases open without a warning'), findsOneWidget);
+    final player = await repository.currentPlayer();
+    expect(player?.preferences.showTriggerWarnings, isFalse);
+  });
+
   testWidgets('"Sign out" in the settings goes to "Log in"', (tester) async {
     final repository = await openSettings(tester);
 
@@ -224,6 +256,104 @@ void main() {
     expect(find.byType(LogInScreen), findsOneWidget);
     expect(find.byType(HomeScreen), findsNothing);
     expect(await repository.currentPlayer(), isNull);
+  });
+
+  testWidgets('"Edit information" changes the name and username', (
+    tester,
+  ) async {
+    final repository = await openSettings(tester);
+
+    await tester.tap(find.text('Edit information'));
+    await tester.pumpAndSettle();
+    await fill(tester, 'Name', 'Bella');
+    await fill(tester, 'Username', 'bella');
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(Dialog), findsNothing);
+    final player = await repository.currentPlayer();
+    expect(player?.name, 'Bella');
+    expect(player?.username, 'bella');
+
+    // The profile under the settings shows the new name.
+    await tester.tap(find.byTooltip('Back'));
+    await tester.pumpAndSettle();
+    expect(find.text('Judge Bella'), findsOneWidget);
+
+    // The player now logs in with the new username.
+    await repository.signOut();
+    await expectLater(
+      repository.signIn(
+        username: 'isabella',
+        password: FakeGameRepository.defaultPassword,
+      ),
+      throwsA(isA<AccountException>()),
+    );
+    await repository.signIn(
+      username: 'bella',
+      password: FakeGameRepository.defaultPassword,
+    );
+  });
+
+  testWidgets('"Edit information" refuses a taken username', (tester) async {
+    final repository = await FakeGameRepository.withHistory();
+    await repository.createPlayer(
+      name: 'Tom',
+      username: 'tom',
+      password: 'secret1',
+      countryCode: 'NL',
+    );
+    await repository.signIn(
+      username: 'isabella',
+      password: FakeGameRepository.defaultPassword,
+    );
+    await launch(tester, repository);
+    await tester.tap(find.bySemanticsLabel('Open profile'));
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byWidgetPredicate(
+        (w) => w is AppSvg && w.assetPath == AppAssets.settings,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Edit information'));
+    await tester.pumpAndSettle();
+    await fill(tester, 'Username', 'tom');
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('This username is already taken.'), findsOneWidget);
+    expect((await repository.currentPlayer())?.username, 'isabella');
+  });
+
+  testWidgets('"Delete account" asks for the password, then starts over', (
+    tester,
+  ) async {
+    final repository = await openSettings(tester);
+
+    await tester.tap(find.text('Delete account'));
+    await tester.pumpAndSettle();
+    await fill(tester, 'Password', 'wrong-password');
+    await tester.tap(find.text('Delete'));
+    await tester.pumpAndSettle();
+    expect(find.text('Wrong password.'), findsOneWidget);
+    expect(await repository.currentPlayer(), isNotNull);
+
+    await fill(tester, 'Password', FakeGameRepository.defaultPassword);
+    await tester.tap(find.text('Delete'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CreateAccountScreen), findsOneWidget);
+    expect(find.byType(SettingsScreen), findsNothing);
+    expect(await repository.currentPlayer(), isNull);
+    // The username is free again.
+    await repository.createPlayer(
+      name: 'Isabella',
+      username: 'isabella',
+      password: 'secret1',
+      countryCode: 'NL',
+    );
   });
 
   testWidgets('"Create new account" goes back to "Create account"', (

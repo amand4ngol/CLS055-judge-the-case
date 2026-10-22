@@ -236,13 +236,13 @@ ruling = await repo.saveProgress(ruling.withProgress(argumentsRead: 3, verdict: 
 |---|---|
 | Show it? | `player.preferences.needsWarning(courtCase)` |
 | What the case contains | `courtCase.contentWarnings`: each has a `label` ("Sexual violence") |
-| "Do not show me sensitive cases again" | see below |
+| "Do not show this warning again" | see below |
 
 ```dart
-await repo.savePreferences(player.preferences.copyWith(hideSensitiveCases: true));
+await repo.savePreferences(player.preferences.copyWith(showTriggerWarnings: false));
 ```
 
-After this, every case with a content warning disappears from the home columns.
+After this, sensitive cases still show in the home columns but open without the warning, until the player turns "Trigger warnings" back on in the settings. Hiding sensitive cases is a separate setting: `hideSensitiveCases` ("Hide all sensitive cases" in the sensitive case filter).
 
 ### 08 Result
 
