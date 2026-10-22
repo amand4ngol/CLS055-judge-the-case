@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../models.dart';
 import '../../../shared/widgets/app_svg.dart';
+import '../../../shared/widgets/flag_icon.dart';
 
 /// "Choose country to rule in". Tapping it opens a search bar and the
 /// country list in place, which pushes the button below down.
@@ -158,15 +159,10 @@ class _CountryDropdownState extends State<CountryDropdown> {
     );
   }
 
-  /// Only the Netherlands flag is exported so far;
   Widget _flag(Country country) {
-    return SizedBox(
-      width: 26,
-      height: 18,
-      child: AppSvg(
-        AppAssets.flag(country.code),
-        fallback: FittedBox(child: Text(country.flag)),
-      ),
+    return SizedBox.fromSize(
+      size: FlagIcon.size,
+      child: FlagIcon(country.code),
     );
   }
 }
