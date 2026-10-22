@@ -9,14 +9,16 @@ class TriggerWarning extends StatelessWidget {
   const TriggerWarning({
     super.key,
     required this.warnings,
-    required this.hideSensitiveCases,
-    required this.onHideSensitiveCasesChanged,
+    required this.dontShowAgain,
+    required this.onDontShowAgainChanged,
     required this.onEnter,
   });
 
   final Set<ContentWarning> warnings;
-  final bool hideSensitiveCases;
-  final ValueChanged<bool> onHideSensitiveCasesChanged;
+
+  /// "Do not show this warning again".
+  final bool dontShowAgain;
+  final ValueChanged<bool> onDontShowAgainChanged;
   final VoidCallback onEnter;
 
   /// "violence", "violence and death", "violence, drugs and death"
@@ -49,9 +51,9 @@ class TriggerWarning extends StatelessWidget {
             style: AppTextStyles.warningBody,
           ),
           const SizedBox(height: 24),
-          _HideSensitiveCheckbox(
-            value: hideSensitiveCases,
-            onChanged: onHideSensitiveCasesChanged,
+          _DontShowAgainCheckbox(
+            value: dontShowAgain,
+            onChanged: onDontShowAgainChanged,
           ),
           const SizedBox(height: 41),
           Center(child: _EnterButton(onTap: onEnter)),
@@ -61,8 +63,8 @@ class TriggerWarning extends StatelessWidget {
   }
 }
 
-class _HideSensitiveCheckbox extends StatelessWidget {
-  const _HideSensitiveCheckbox({required this.value, required this.onChanged});
+class _DontShowAgainCheckbox extends StatelessWidget {
+  const _DontShowAgainCheckbox({required this.value, required this.onChanged});
 
   final bool value;
   final ValueChanged<bool> onChanged;
@@ -92,7 +94,7 @@ class _HideSensitiveCheckbox extends StatelessWidget {
               const SizedBox(width: 7),
               Expanded(
                 child: Text(
-                  'Do not show me sensitive cases again',
+                  'Do not show this warning again',
                   style: AppTextStyles.warningCheckbox,
                 ),
               ),

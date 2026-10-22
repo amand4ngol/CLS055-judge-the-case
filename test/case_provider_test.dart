@@ -59,17 +59,48 @@ void main() {
     expect(provider.exit.result, same(result));
   });
 
-  test(
-    '"Do not show me sensitive cases again" is saved after leaving',
-    () async {
-      final repo = await FakeGameRepository.withHistory();
-      final home = HomeProvider(repo);
-      await home.load();
+  test('"Do not show this warning again" stops the warnings', () async {
+    final repo = await FakeGameRepository.withHistory();
+    final home = HomeProvider(repo);
+    await home.load();
 
-      await home.afterCase(const CaseExit(hideSensitiveCases: true));
-      expect(home.player?.preferences.hideSensitiveCases, isTrue);
-    },
-  );
+    final provider = CaseProvider(repo, FakeData.deathAtTheWheelId);
+    await provider.load();
+    provider.setDontShowWarningAgain(true);
+    await provider.enterCase();
+    expect(provider.exit.turnOffTriggerWarnings, isTrue);
+
+    await home.afterCase(provider.exit);
+    expect(home.player?.preferences.showTriggerWarnings, isFalse);
+    // Sensitive cases still show, now without the warning.
+    expect(home.player?.preferences.hideSensitiveCases, isFalse);
+    final next = CaseProvider(repo, FakeData.deathAtTheWheelId);
+    await next.load();
+    expect(next.status, CaseScreenStatus.ready);
+  });
+
+  test('the checkbox changes nothing if the player leaves', () async {
+    final repo = await FakeGameRepository.withHistory();
+    final provider = CaseProvider(repo, FakeData.deathAtTheWheelId);
+    await provider.load();
+    provider.setDontShowWarningAgain(true);
+
+    expect(provider.exit.turnOffTriggerWarnings, isFalse);
+  });
+
+  test('turning trigger warnings back on shows them again', () async {
+    final repo = await FakeGameRepository.withHistory();
+    final home = HomeProvider(repo);
+    await home.load();
+    final preferences = home.player!.preferences;
+
+    await home.setPreferences(preferences.copyWith(showTriggerWarnings: false));
+    await home.setPreferences(preferences.copyWith(showTriggerWarnings: true));
+
+    final provider = CaseProvider(repo, FakeData.deathAtTheWheelId);
+    await provider.load();
+    expect(provider.status, CaseScreenStatus.warning);
+  });
 
   test('formatters', () {
     expect(Formatters.euro(36500), '36,500 €');

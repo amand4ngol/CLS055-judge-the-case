@@ -115,6 +115,13 @@ abstract final class AppTextStyles {
     letterSpacing: 0.9024,
     lineHeight: 11.28,
   );
+  static final medallionContinue = _dmSans(
+    14,
+    FontWeight.w700,
+    AppColors.white,
+    letterSpacing: 0.9024,
+    lineHeight: 11.28,
+  );
   static final medallionEnter = _dmSans(
     7.52,
     FontWeight.w800,
@@ -283,6 +290,12 @@ abstract final class AppTextStyles {
     AppColors.beige,
     lineHeight: 32,
   );
+  static final profileUsername = _dmSans(
+    12,
+    FontWeight.w500,
+    AppColors.beige.withValues(alpha: 0.8),
+    lineHeight: 16,
+  );
   static final profileRank = _dmSans(
     10,
     FontWeight.w400,
@@ -337,6 +350,7 @@ abstract final class AppTextStyles {
     AppColors.textDark,
     lineHeight: 16,
   );
+
   /// "Traffic · 2023" under a previous case.
   static final previousCaseDetail = _dmSans(
     10,

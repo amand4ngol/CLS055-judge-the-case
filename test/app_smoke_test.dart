@@ -19,7 +19,8 @@ void main() {
 
     expect(find.byType(SplashScreen), findsNothing);
     expect(find.byType(HomeScreen), findsOneWidget);
-    expect(find.text('NEXT CASE'), findsWidgets);
+    // This player left a case half read.
+    expect(find.text('CONTINUE'), findsWidgets);
   });
 
   test('every bundled font and license file is in the asset bundle', () async {

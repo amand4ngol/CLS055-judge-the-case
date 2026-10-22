@@ -88,6 +88,14 @@ void main() {
       );
       final again = PlayerProfile.fromFirestore(profile.uid, profile.toMap());
       expect(again.preferences.filteredTopics, {ContentWarning.death});
+      // Profiles saved before the setting existed keep their warnings.
+      expect(ContentPreferences.fromMap({}).showTriggerWarnings, isTrue);
+      expect(
+        ContentPreferences.fromMap(
+          const ContentPreferences(showTriggerWarnings: false).toMap(),
+        ).showTriggerWarnings,
+        isFalse,
+      );
       expect(again.hasUnlocked(Achievement.firstRuling), isTrue);
     });
   });
