@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -7,8 +6,8 @@ import 'package:judge_the_case/data/firestore_game_repository.dart';
 import 'package:judge_the_case/firebase_options.dart';
 import 'package:judge_the_case/models.dart';
 
-/// Plays one case on the real Firebase project with a throwaway account, then deletes
-/// everything it wrote. Run on a simulator: `flutter test integration_test/firebase_smoke_test.dart -d <device>`.
+/// Plays one case on the real Firebase project with a throwaway account, then deletes the account
+/// and everything it wrote. Run on a simulator: `flutter test integration_test/firebase_smoke_test.dart -d <device>`.
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -16,10 +15,11 @@ void main() {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
     final db = FirebaseFirestore.instance;
     final repo = FirestoreGameRepository();
-    final player = await repo.createPlayer(
+    const password = 'smoke-test-1';
+    await repo.createPlayer(
       name: 'Smoke test',
       username: 'smoke-${DateTime.now().millisecondsSinceEpoch}',
-      password: 'smoke-test-1',
+      password: password,
       countryCode: 'NL',
     );
     try {
@@ -41,12 +41,7 @@ void main() {
       expect((await repo.reviseCase(next.id)).ruling.isCompleted, isTrue);
       expect((await repo.currentPlayer())!.stats.casesJudged, 1);
     } finally {
-      final userDoc = db.collection('users').doc(player.uid);
-      for (final d in (await userDoc.collection('rulings').get()).docs) {
-        await d.reference.delete();
-      }
-      await userDoc.delete();
-      await FirebaseAuth.instance.currentUser!.delete();
+      await repo.deleteAccount(password: password);
     }
   });
 }

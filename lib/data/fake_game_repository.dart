@@ -119,6 +119,17 @@ class FakeGameRepository implements GameRepository {
   }
 
   @override
+  Future<void> deleteAccount({required String password}) async {
+    await _wait();
+    final player = _requirePlayer;
+    if (_passwords[player.username] != password) throw const AccountException(AccountError.wrongCredentials);
+    _passwords.remove(player.username);
+    _profiles.remove(player.username);
+    _rulingsByUid.remove(player.uid);
+    _player = null;
+  }
+
+  @override
   Future<List<Country>> countries() async {
     await _wait();
     return [for (final e in _countries.entries) Country.fromFirestore(e.key, e.value)];

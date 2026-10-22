@@ -72,6 +72,24 @@ class FirestoreGameRepository implements GameRepository {
   @override
   Future<void> signOut() => _auth.signOut();
 
+  /// Signs in again first: Firebase only deletes an account after a recent sign-in.
+  @override
+  Future<void> deleteAccount({required String password}) async {
+    final user = _auth.currentUser ?? (throw StateError('No player: sign in first'));
+    await _account(() => user.reauthenticateWithCredential(
+        EmailAuthProvider.credential(email: user.email!, password: password)));
+    final docs = [for (final d in (await _rulings.get()).docs) d.reference, _userDoc];
+    for (var i = 0; i < docs.length; i += 500) {
+      final batch = _db.batch();
+      for (final doc in docs.skip(i).take(500)) {
+        batch.delete(doc);
+      }
+      await batch.commit();
+    }
+    await _account(user.delete);
+    await _auth.signOut();
+  }
+
   static Future<T> _account<T>(Future<T> Function() action) async {
     try {
       return await action();

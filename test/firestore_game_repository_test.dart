@@ -27,11 +27,56 @@ Future<FakeFirebaseFirestore> seededFirestore() async {
   return db;
 }
 
+/// [MockFirebaseAuth] accepts any password and never forgets a user. This one keeps the accounts
+/// as Firebase Auth does: wrong passwords and deleted accounts are refused.
+class _AccountsAuth extends MockFirebaseAuth {
+  final _passwords = <String, String>{};
+  final _users = <String, MockUser>{};
+
+  @override
+  Future<UserCredential> createUserWithEmailAndPassword({required String email, required String password}) async {
+    if (_passwords.containsKey(email)) throw FirebaseAuthException(code: 'email-already-in-use');
+    final created = await super.createUserWithEmailAndPassword(email: email, password: password);
+    _passwords[email] = password;
+    mockUser = _users[email] = _Account(this, uid: created.user!.uid, email: email);
+    return signInWithCredential(null);
+  }
+
+  @override
+  Future<UserCredential> signInWithEmailAndPassword({required String email, required String password}) async {
+    if (_passwords[email] != password) throw FirebaseAuthException(code: 'invalid-credential');
+    mockUser = _users[email];
+    return super.signInWithEmailAndPassword(email: email, password: password);
+  }
+}
+
+// ignore: must_be_immutable
+class _Account extends MockUser {
+  _Account(this._auth, {super.uid, super.email});
+
+  final _AccountsAuth _auth;
+
+  @override
+  Future<UserCredential> reauthenticateWithCredential(AuthCredential? credential) async {
+    if (_auth._passwords[email] != (credential as EmailAuthCredential).password) {
+      throw FirebaseAuthException(code: 'invalid-credential');
+    }
+    return super.reauthenticateWithCredential(credential);
+  }
+
+  @override
+  Future<void> delete() async {
+    _auth._passwords.remove(email);
+    _auth._users.remove(email);
+    await _auth.signOut();
+  }
+}
+
 void main() {
   repositoryContract('FakeGameRepository', () async => FakeGameRepository(latency: Duration.zero));
   repositoryContract(
     'FirestoreGameRepository',
-    () async => FirestoreGameRepository(firestore: await seededFirestore(), auth: MockFirebaseAuth()),
+    () async => FirestoreGameRepository(firestore: await seededFirestore(), auth: _AccountsAuth()),
   );
 
   group('FirestoreGameRepository', () {
@@ -40,7 +85,7 @@ void main() {
     late FirestoreGameRepository repo;
     setUp(() async {
       db = await seededFirestore();
-      auth = MockFirebaseAuth();
+      auth = _AccountsAuth();
       repo = FirestoreGameRepository(firestore: db, auth: auth);
     });
 
@@ -111,6 +156,21 @@ void main() {
       await repo.createPlayer(name: 'Anna', username: 'anna', password: 'secret1', countryCode: 'NL');
       final c = await repo.caseById(FakeData.whistleblowerId);
       await expectLater(repo.saveProgress(PlayerRuling.start(c)), throwsStateError);
+    });
+
+    test('deleting the account deletes users/{uid}, its rulings and the Firebase Auth user', () async {
+      final player = await repo.createPlayer(name: 'Anna', username: 'anna', password: 'secret1', countryCode: 'NL');
+      await repo.deliverVerdict(await repo.caseById(FakeData.whistleblowerId),
+          const PlayerVerdict(options: {VerdictOption.communityService}));
+      await repo.openCase(await repo.caseById(FakeData.healingWeekendId));
+      final userDoc = db.collection('users').doc(player.uid);
+      expect((await userDoc.collection('rulings').get()).docs, hasLength(2));
+
+      await repo.deleteAccount(password: 'secret1');
+      expect((await userDoc.get()).exists, isFalse);
+      expect((await userDoc.collection('rulings').get()).docs, isEmpty);
+      expect(auth.currentUser, isNull);
+      expect(await accountError(() => repo.signIn(username: 'anna', password: 'secret1')), AccountError.wrongCredentials);
     });
 
     test('dates come back from Firestore as DateTime', () async {

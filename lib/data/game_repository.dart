@@ -24,6 +24,10 @@ abstract interface class GameRepository {
 
   Future<void> signOut();
 
+  /// "Delete account": deletes the player's rulings, profile and account, then signs out.
+  /// The password is asked again; a wrong one throws [AccountException] ([AccountError.wrongCredentials]).
+  Future<void> deleteAccount({required String password});
+
   /// Country picker: also changes the country the player rules in.
   Future<List<Country>> countries();
   Future<PlayerProfile> setCountry(String countryCode);
