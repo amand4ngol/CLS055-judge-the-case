@@ -109,8 +109,8 @@ class _CaseContent extends StatelessWidget {
                 if (courtCase.arguments.isNotEmpty)
                   ArgumentsSection(
                     arguments: courtCase.arguments,
-                    argumentsRead: provider.argumentsRead,
-                    onPageChanged: provider.markArgumentsRead,
+                    currentPage: provider.argumentPage,
+                    onPageChanged: provider.showArgumentPage,
                   ),
                 VerdictSection(
                   verdict: provider.verdict,

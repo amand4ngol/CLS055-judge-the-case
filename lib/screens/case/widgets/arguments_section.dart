@@ -5,24 +5,42 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../models.dart';
 import 'argument_card.dart';
 
-/// "ARGUMENTS" with the read counter, the progress segments and the card
-/// carousel (intro card first, then one card per argument).
-class ArgumentsSection extends StatelessWidget {
+/// "ARGUMENTS" with the position counter, the progress segments and the card
+/// carousel (intro card first, then one card per argument). The carousel
+/// opens on [currentPage], so a case left at 3/6 reopens at 3/6.
+class ArgumentsSection extends StatefulWidget {
   const ArgumentsSection({
     super.key,
     required this.arguments,
-    required this.argumentsRead,
+    required this.currentPage,
     required this.onPageChanged,
   });
 
   final List<CaseArgument> arguments;
-  final int argumentsRead;
+
+  /// Page shown by the carousel; the counter and segments follow it.
+  final int currentPage;
 
   /// Page 0 is the intro card; page n is argument n.
   final ValueChanged<int> onPageChanged;
 
   @override
+  State<ArgumentsSection> createState() => _ArgumentsSectionState();
+}
+
+class _ArgumentsSectionState extends State<ArgumentsSection> {
+  late final _controller = PageController(initialPage: widget.currentPage);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final arguments = widget.arguments;
+    final currentPage = widget.currentPage;
     return Padding(
       padding: const EdgeInsets.only(top: 20),
       child: Column(
@@ -33,18 +51,19 @@ class ArgumentsSection extends StatelessWidget {
             children: [
               Text('ARGUMENTS', style: AppTextStyles.caseSectionLabel),
               Text(
-                '$argumentsRead/ ${arguments.length}',
+                '$currentPage/ ${arguments.length}',
                 style: AppTextStyles.argumentsCount,
               ),
             ],
           ),
           const SizedBox(height: 12),
-          _ProgressSegments(total: arguments.length, filled: argumentsRead),
+          _ProgressSegments(total: arguments.length, filled: currentPage),
           SizedBox(
             height: 326,
             child: PageView.builder(
+              controller: _controller,
               itemCount: arguments.length + 1,
-              onPageChanged: onPageChanged,
+              onPageChanged: widget.onPageChanged,
               itemBuilder: (context, page) => Padding(
                 padding: const EdgeInsets.fromLTRB(8, 18, 8, 20),
                 child: page == 0

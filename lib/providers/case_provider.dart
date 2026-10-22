@@ -30,6 +30,7 @@ class CaseProvider extends ChangeNotifier {
   CourtCase? _courtCase;
   PlayerRuling? _ruling;
   PlayerVerdict _verdict = PlayerVerdict.empty;
+  int _argumentPage = 0;
   bool _showLongSummary = false;
   bool _dontShowWarningAgain = false;
   bool _turnOffTriggerWarnings = false;
@@ -48,7 +49,11 @@ class CaseProvider extends ChangeNotifier {
   bool get dontShowWarningAgain => _dontShowWarningAgain;
   bool get isDelivering => _isDelivering;
 
+  /// Saved progress: the most arguments ever reached, never lowered.
   int get argumentsRead => _ruling?.argumentsRead ?? 0;
+
+  /// Argument shown by the carousel (0 = intro card), drives the progress bar.
+  int get argumentPage => _argumentPage;
   int get argumentsCount => courtCase.arguments.length;
 
   bool get canDeliver => _verdict.isComplete && !_isDelivering;
@@ -96,6 +101,7 @@ class CaseProvider extends ChangeNotifier {
   Future<void> _open() async {
     final ruling = await _repository.openCase(courtCase);
     _ruling = ruling;
+    _argumentPage = ruling.argumentsRead;
     _verdict = ruling.verdict;
     _status = CaseScreenStatus.ready;
     _notify();
@@ -114,9 +120,13 @@ class CaseProvider extends ChangeNotifier {
 
   /// Called when the argument carousel shows page [page]. Page 0 is the
   /// intro card, page n is argument n, so reaching it means n were read.
-  void markArgumentsRead(int page) {
+  void showArgumentPage(int page) {
+    _argumentPage = page;
     final ruling = _ruling;
-    if (ruling == null || page <= ruling.argumentsRead) return;
+    if (ruling == null || page <= ruling.argumentsRead) {
+      _notify();
+      return;
+    }
     _ruling = ruling.withProgress(argumentsRead: page);
     _notify();
     _saveProgress();

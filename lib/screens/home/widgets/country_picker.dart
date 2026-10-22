@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../models.dart';
 import '../../../shared/widgets/app_svg.dart';
+import '../../../shared/widgets/flag_icon.dart';
 import '../../../shared/widgets/tap_target.dart';
 
 /// "Switch country" dropdown opened from the flag in the home header: a
@@ -192,14 +193,9 @@ class _CountryRow extends StatelessWidget {
                     width: 26,
                     height: 28,
                     child: Center(
-                      child: AppSvg(
-                        AppAssets.flag(country.code),
-                        excludeFromSemantics: true,
-                        // Only the Netherlands flag is exported so far.
-                        fallback: Text(
-                          country.flag,
-                          style: const TextStyle(fontSize: 18),
-                        ),
+                      child: SizedBox.fromSize(
+                        size: FlagIcon.size,
+                        child: FlagIcon(country.code),
                       ),
                     ),
                   ),
