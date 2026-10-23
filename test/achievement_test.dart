@@ -16,16 +16,21 @@ void main() {
     addTearDown(tester.view.reset);
     final actions = <ResultAction>[];
     await tester.pumpWidget(
-      MaterialApp(
-        home: Builder(
-          builder: (context) => TextButton(
-            onPressed: () async => actions.add(
-              await AchievementScreen.showAll(
-                Navigator.of(context),
-                achievements,
+      // No entrance or glow: the glow never stops, and these tests are about
+      // the pages, not the animation.
+      MediaQuery(
+        data: const MediaQueryData(disableAnimations: true),
+        child: MaterialApp(
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () async => actions.add(
+                await AchievementScreen.showAll(
+                  Navigator.of(context),
+                  achievements,
+                ),
               ),
+              child: const Text('open'),
             ),
-            child: const Text('open'),
           ),
         ),
       ),
@@ -82,6 +87,7 @@ void main() {
     expect(find.byType(AchievementScreen), findsNothing);
     expect(actions, [ResultAction.home]);
   });
+
   /// How visible the button is: the lowest opacity of the fades around it.
   double buttonOpacity(WidgetTester tester) => tester
       .widgetList<FadeTransition>(
@@ -93,9 +99,7 @@ void main() {
       .map((fade) => fade.opacity.value)
       .reduce((a, b) => a < b ? a : b);
 
-  testWidgets('the entrance plays once and leaves everything in place', (
-    tester,
-  ) async {
+  testWidgets('the entrance plays, then the glow keeps going', (tester) async {
     tester.view.physicalSize = const Size(402, 874);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -109,9 +113,11 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     expect(buttonOpacity(tester), 0);
 
-    // The entrance and the glow end, so the screen settles.
-    await tester.pumpAndSettle();
+    // After the entrance everything is in place and the badge keeps glowing.
+    await tester.pump(const Duration(milliseconds: 1500));
     expect(buttonOpacity(tester), 1);
+    await tester.pump(const Duration(seconds: 10));
+    expect(tester.hasRunningAnimations, isTrue);
     expect(find.text('First ruling!'), findsOneWidget);
   });
 

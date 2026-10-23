@@ -63,7 +63,8 @@ class _AchievementScreenState extends State<AchievementScreen>
     duration: const Duration(milliseconds: 1300),
   );
 
-  /// The ring that ripples out of the badge a few times once it has landed.
+  /// The ring that keeps rippling out of the badge once it has landed. It
+  /// pauses by itself while another page covers this one.
   late final AnimationController _glow = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 1200),
@@ -129,7 +130,7 @@ class _AchievementScreenState extends State<AchievementScreen>
     }
     _intro.addListener(_buzzOnPop);
     _intro.forward().whenCompleteOrCancel(() {
-      if (mounted) _glow.repeat(count: 3);
+      if (mounted) _glow.repeat();
     });
   }
 
@@ -262,7 +263,7 @@ class _GlowRing extends AnimatedWidget {
   @override
   Widget build(BuildContext context) {
     final t = (listenable as Animation<double>).value;
-    // Hidden before the first ripple and after the last one.
+    // Hidden until the badge has landed.
     if (t == 0) return const SizedBox.shrink();
     return Transform.scale(
       scale: 1 + 0.5 * t,
