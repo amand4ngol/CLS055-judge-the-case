@@ -18,6 +18,13 @@ class CaseTitleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final subtitle = this.subtitle;
+    // The title always takes two lines of room, so every card in the row has
+    // the same height whether its title wraps or not.
+    final titleStyle = AppTextStyles.titleCardTitle;
+    final titleMinHeight =
+        2 *
+        MediaQuery.textScalerOf(context).scale(titleStyle.fontSize!) *
+        titleStyle.height!;
     return Container(
       constraints: const BoxConstraints(minHeight: 77.08),
       padding: const EdgeInsets.fromLTRB(9.4, 12.22, 9.4, 10.34),
@@ -40,10 +47,15 @@ class CaseTitleCard extends StatelessWidget {
             style: AppTextStyles.titleCardLabel,
           ),
           const SizedBox(height: 4.7),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: AppTextStyles.titleCardTitle,
+          ConstrainedBox(
+            constraints: BoxConstraints(minHeight: titleMinHeight),
+            child: Center(
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                style: titleStyle,
+              ),
+            ),
           ),
           if (subtitle != null) ...[
             const SizedBox(height: 4.7),

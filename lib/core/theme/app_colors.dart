@@ -56,10 +56,17 @@ abstract final class AppColors {
   // Home: medallions (round button on each case column)
 
   static const medallionGold = Color(0xFFDFBD4F);
-  static const medallionGoldRing = Color(0xFFFFF8DF);
   static const medallionGoldLabel = Color(0xFF98751D);
-  static const medallionCompletedText = Color(0xFF2C281D);
-  static const medallionCheckBadge = Color(0xFF28332A);
+
+  /// Disc of a completed case: the player's verdict matched the court's.
+  static const medallionCorrect = Color(0x33FCE449);
+
+  /// Disc of a completed case: the player's verdict was wrong.
+  static const medallionIncorrect = Color(0x33C0C0C0);
+
+  /// Inner shadow at the bottom of a completed case's disc.
+  static const medallionCompletedShadow = Color(0x2E16372D);
+
   static const medallionEnterBorder = Color(0xFFEBE5D9);
 
   static const medallionLocked = Color.fromRGBO(226, 221, 211, 0.72);

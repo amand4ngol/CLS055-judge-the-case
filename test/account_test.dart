@@ -18,7 +18,10 @@ import 'package:judge_the_case/shared/widgets/app_svg.dart';
 void main() {
   /// Starts the app on a phone the size of the design and waits for the
   /// splash screen to hand over.
-  Future<void> launch(WidgetTester tester, FakeGameRepository repository) async {
+  Future<void> launch(
+    WidgetTester tester,
+    FakeGameRepository repository,
+  ) async {
     tester.view.physicalSize = const Size(402, 874);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -103,7 +106,10 @@ void main() {
     await fill(tester, 'Password', '123');
     await tester.pumpAndSettle();
     expect(find.text('Enter your name.'), findsNothing);
-    expect(find.text('Only letters, numbers, ".", "_" and "-".'), findsOneWidget);
+    expect(
+      find.text('Only letters, numbers, ".", "_" and "-".'),
+      findsOneWidget,
+    );
     expect(find.text('Use at least 6 characters.'), findsOneWidget);
     expect(await repository.currentPlayer(), isNull);
   });
@@ -211,6 +217,30 @@ void main() {
     await tester.tap(find.bySemanticsLabel('Open profile'));
     await tester.pumpAndSettle();
     expect(find.byType(ProfileScreen), findsOneWidget);
+  });
+
+  testWidgets('the rank on the profile lists every rank', (tester) async {
+    final repository = await FakeGameRepository.withHistory();
+    await launch(tester, repository);
+    await tester.tap(find.bySemanticsLabel('Open profile'));
+    await tester.pumpAndSettle();
+    final rank = (await repository.currentPlayer())!.rank;
+
+    await tester.tap(
+      find.bySemanticsLabel('Rank: ${rank.label}. Show all ranks'),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Judge ranks'), findsOneWidget);
+    for (final r in JudgeRank.values) {
+      expect(
+        find.descendant(of: find.byType(Dialog), matching: find.text(r.label)),
+        findsOneWidget,
+      );
+    }
+    await tester.tap(find.text('Close'));
+    await tester.pumpAndSettle();
+    expect(find.byType(Dialog), findsNothing);
   });
 
   testWidgets('the sensitive case filter saves the preferences', (
