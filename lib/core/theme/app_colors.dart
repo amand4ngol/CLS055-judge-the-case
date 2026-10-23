@@ -181,6 +181,15 @@ abstract final class AppColors {
   static const resultCourtCard = Color.fromRGBO(124, 79, 42, 0.05);
   static const resultCourtCardBorder = Color.fromRGBO(76, 71, 61, 0.3);
 
+  // First-time guide
+
+  /// Darkens the home screen around the step's target.
+  static const guideDim = Color.fromRGBO(30, 20, 10, 0.6);
+
+  /// Tip card of the tour: nearly opaque, so the dimmed page does not show
+  /// through the text.
+  static const guideCard = Color.fromRGBO(255, 255, 255, 0.96);
+
   // Trigger warning
 
   static const warningOverlay = Color.fromRGBO(255, 255, 255, 0.85);

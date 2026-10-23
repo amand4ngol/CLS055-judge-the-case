@@ -662,6 +662,31 @@ abstract final class AppTextStyles {
     lineHeight: 30,
   );
 
+  // First-time guide
+
+  static final guideTip = _dmSans(
+    14,
+    FontWeight.w400,
+    AppColors.brown,
+    lineHeight: 16.5,
+  );
+
+  /// "1/3" and "Skip".
+  static final guideProgress = _dmSans(
+    12,
+    FontWeight.w400,
+    AppColors.textSubtle,
+    lineHeight: 16,
+  );
+
+  /// "Next" and "Got it".
+  static final guideAction = _dmSans(
+    14,
+    FontWeight.w700,
+    AppColors.blue,
+    lineHeight: 20,
+  );
+
   // Trigger warning
 
   static final warningTitle = _dmSans(40, FontWeight.w300, AppColors.black);

@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:judge_the_case/data/fake_data.dart';
 import 'package:judge_the_case/data/fake_game_repository.dart';
 import 'package:judge_the_case/models.dart';
 import 'package:judge_the_case/providers/home_provider.dart';
@@ -84,5 +85,28 @@ void main() {
 
     expect(home.status, HomeStatus.signedOut);
     expect(home.player, isNull);
+  });
+
+  test('the guide shows until the player picks a category', () async {
+    final home = HomeProvider(
+      FakeGameRepository(player: FakeData.newPlayer, latency: Duration.zero),
+    );
+    await home.load();
+    expect(home.showsGuide, isTrue);
+
+    await home.selectCategory(1);
+    expect(home.showsGuide, isFalse);
+
+    // A new load (e.g. another player signing in) shows it again.
+    await home.load();
+    expect(home.showsGuide, isTrue);
+    home.dismissGuide();
+    expect(home.showsGuide, isFalse);
+  });
+
+  test('no guide once the player has judged a case', () async {
+    final home = HomeProvider(await FakeGameRepository.withHistory());
+    await home.load();
+    expect(home.showsGuide, isFalse);
   });
 }
