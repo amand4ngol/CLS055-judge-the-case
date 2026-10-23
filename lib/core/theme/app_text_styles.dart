@@ -18,13 +18,13 @@ abstract final class AppTextStyles {
   /// Small caps label, 14.
   static final label = _dmSans(14, FontWeight.w700, AppColors.brown);
 
-  /// Small caps label, 12 (e.g. "REAL COURT CASES").
+  /// Small caps label, 13 (e.g. "REAL COURT CASES").
   static final labelSmall = _dmSans(
-    12,
+    13,
     FontWeight.w700,
     AppColors.brown,
-    letterSpacing: 2.42,
-    lineHeight: 16.5,
+    letterSpacing: 2.62,
+    lineHeight: 17.88,
   );
 
   /// Material [TextTheme] built from the scale above, for [ThemeData].
@@ -57,11 +57,11 @@ abstract final class AppTextStyles {
     lineHeight: 21,
   );
   static final swipeHint = _dmSans(
-    12,
+    13,
     FontWeight.w400,
     AppColors.textMuted,
-    letterSpacing: 0.8,
-    lineHeight: 15,
+    letterSpacing: 0.87,
+    lineHeight: 16.25,
   );
 
   // Category chips (Material 3 segmented buttons in the design, so Roboto)
@@ -75,11 +75,11 @@ abstract final class AppTextStyles {
   static final chipIdle = chipSelected.copyWith(color: AppColors.brown);
 
   static final titleCardLabel = _dmSans(
-    7.52,
+    9.5,
     FontWeight.w700,
     AppColors.medallionGoldLabel,
-    letterSpacing: 1.128,
-    lineHeight: 11.28,
+    letterSpacing: 1.42,
+    lineHeight: 14.25,
   );
   static final titleCardTitle = _caslon(
     15.98,
@@ -87,26 +87,19 @@ abstract final class AppTextStyles {
     lineHeight: 16.779,
   );
   static final titleCardSubtitle = _dmSans(
-    7.52,
+    9.5,
     FontWeight.w400,
     AppColors.titleCardSubtitle,
-    lineHeight: 11.28,
+    lineHeight: 14.25,
   );
 
-  // The 0.72 alpha on the two medallion labels comes from the design.
-  static final medallionCompletedLabel = _dmSans(
-    7.52,
-    FontWeight.w700,
-    AppColors.medallionCompletedText.withValues(alpha: 0.72),
-    letterSpacing: 0.9024,
-    lineHeight: 11.28,
-  );
+  // The 0.72 alpha on the medallion label comes from the design.
   static final medallionLockedLabel = _dmSans(
-    7.52,
+    9.5,
     FontWeight.w700,
     AppColors.medallionLockedText.withValues(alpha: 0.72),
-    letterSpacing: 0.9024,
-    lineHeight: 11.28,
+    letterSpacing: 1.14,
+    lineHeight: 14.25,
   );
   static final medallionNextCase = _dmSans(
     16,
@@ -123,11 +116,11 @@ abstract final class AppTextStyles {
     lineHeight: 11.28,
   );
   static final medallionEnter = _dmSans(
-    7.52,
+    9.5,
     FontWeight.w800,
     AppColors.brown,
-    letterSpacing: 0.6016,
-    lineHeight: 11.28,
+    letterSpacing: 0.76,
+    lineHeight: 14.25,
   );
 
   // Notice shown instead of an empty case column
@@ -183,11 +176,11 @@ abstract final class AppTextStyles {
 
   /// "CREATE ACCOUNT TO START JUDGING".
   static final accountEyebrow = _dmSans(
-    12,
+    13,
     FontWeight.w400,
     AppColors.brown,
-    letterSpacing: 2.42,
-    lineHeight: 16.5,
+    letterSpacing: 2.62,
+    lineHeight: 17.88,
   );
 
   /// "Welcome Back, Judge".
@@ -217,11 +210,11 @@ abstract final class AppTextStyles {
 
   /// Error under the fields ("This username is already taken").
   static final fieldError = _dmSans(
-    12,
+    13,
     FontWeight.w400,
     AppColors.resultIncorrect,
-    letterSpacing: 0.4,
-    lineHeight: 16,
+    letterSpacing: 0.43,
+    lineHeight: 17.33,
   );
 
   /// "Choose country to rule in" and the search field of the open dropdown.
@@ -278,11 +271,11 @@ abstract final class AppTextStyles {
 
   // Welcome card
   static final profileWelcome = _dmSans(
-    8,
+    10,
     FontWeight.w400,
     AppColors.beige.withValues(alpha: 0.55),
-    letterSpacing: 2,
-    lineHeight: 12,
+    letterSpacing: 2.5,
+    lineHeight: 15,
   );
   static final profileName = _dmSans(
     24,
@@ -291,56 +284,61 @@ abstract final class AppTextStyles {
     lineHeight: 32,
   );
   static final profileUsername = _dmSans(
-    12,
+    13,
     FontWeight.w500,
     AppColors.beige.withValues(alpha: 0.8),
-    lineHeight: 16,
+    lineHeight: 17.33,
   );
   static final profileRank = _dmSans(
-    10,
+    12,
     FontWeight.w400,
     AppColors.beige.withValues(alpha: 0.6),
-    lineHeight: 15,
+    lineHeight: 18,
+  );
+  /// "Court Clerk" in "Rank: Court Clerk", brighter than the "Rank: " before it.
+  static final profileRankValue = profileRank.copyWith(
+    fontWeight: FontWeight.w600,
+    color: AppColors.beige.withValues(alpha: 0.9),
   );
   static final profileCounter = _dmSans(
-    9,
+    11,
     FontWeight.w700,
     AppColors.profileCounter,
-    lineHeight: 13.5,
+    lineHeight: 16.5,
   );
   static final profileMilestone = _dmSans(
-    10,
+    12,
     FontWeight.w400,
     AppColors.beige.withValues(alpha: 0.8),
-    lineHeight: 15,
+    lineHeight: 18,
   );
 
   /// "CASES STATISTICS", "REVISE YOUR PREVIOUS CASES".
   static final profileSection = _dmSans(
-    10,
+    12,
     FontWeight.w400,
     AppColors.textSubtle,
-    letterSpacing: 1.6,
-    lineHeight: 12,
+    letterSpacing: 1.92,
+    lineHeight: 14.4,
   );
 
   /// "ACHIEVEMENTS".
   static final profileSectionBold = _dmSans(
-    12,
+    13,
     FontWeight.w700,
     AppColors.textSubtle,
-    letterSpacing: 1.6,
-    lineHeight: 12,
+    letterSpacing: 1.73,
+    lineHeight: 13,
   );
 
   // Statistics tiles (Lora in the design, which the app does not bundle)
   static final statValue = _caslon(20, AppColors.white, lineHeight: 28);
   static final statLabel = _dmSans(
-    6,
+    8,
     FontWeight.w400,
     AppColors.white.withValues(alpha: 0.8),
-    letterSpacing: 1.08,
-    lineHeight: 9,
+    letterSpacing: 1.44,
+    lineHeight: 12,
   );
 
   // Previous cases
@@ -353,41 +351,41 @@ abstract final class AppTextStyles {
 
   /// "Traffic · 2023" under a previous case.
   static final previousCaseDetail = _dmSans(
-    10,
-    FontWeight.w400,
-    AppColors.textSubtle,
-    lineHeight: 14,
-  );
-  static final previousCaseAction = _dmSans(
     12,
     FontWeight.w400,
     AppColors.textSubtle,
-    lineHeight: 12,
+    lineHeight: 16.8,
+  );
+  static final previousCaseAction = _dmSans(
+    13,
+    FontWeight.w400,
+    AppColors.textSubtle,
+    lineHeight: 13,
   );
 
   // Achievements
   static final achievementCount = _dmSans(
-    8,
+    10,
     FontWeight.w700,
     AppColors.achievementCount,
-    lineHeight: 12,
-  );
-  static final achievementBadge = _caslon(
-    10,
-    AppColors.textSubtle,
     lineHeight: 15,
   );
-  static final achievementTitle = _dmSans(
+  static final achievementBadge = _caslon(
     12,
+    AppColors.textSubtle,
+    lineHeight: 18,
+  );
+  static final achievementTitle = _dmSans(
+    13,
     FontWeight.w600,
     AppColors.beige,
-    lineHeight: 16,
+    lineHeight: 17.33,
   );
   static final achievementDescription = _dmSans(
-    10,
+    12,
     FontWeight.w400,
     AppColors.beige.withValues(alpha: 0.65),
-    lineHeight: 13.75,
+    lineHeight: 16.5,
   );
 
   // ---------------------------------------------------------------------------
@@ -396,11 +394,11 @@ abstract final class AppTextStyles {
 
   /// "CONTENT PREFERENCES", "MANAGE ACCOUNT".
   static final settingsSection = _dmSans(
-    12,
+    13,
     FontWeight.w400,
     AppColors.textSubtle,
-    letterSpacing: 1.6,
-    lineHeight: 12,
+    letterSpacing: 1.73,
+    lineHeight: 13,
   );
   static final settingsBody = _dmSans(
     14,
@@ -420,28 +418,28 @@ abstract final class AppTextStyles {
 
   /// "No filter selected".
   static final settingsItemDetail = _dmSans(
-    12,
+    13,
     FontWeight.w400,
     AppColors.fieldLabel,
-    letterSpacing: 0.4,
-    lineHeight: 16,
+    letterSpacing: 0.43,
+    lineHeight: 17.33,
   );
   static final settingsNote = _dmSans(
-    12,
+    13,
     FontWeight.w400,
     AppColors.textSubtle,
-    lineHeight: 19.5,
+    lineHeight: 21.12,
   );
 
   // Case screen
 
   // Header
   static final caseBadge = _dmSans(
-    12,
+    13,
     FontWeight.w400,
     AppColors.badgeRedText,
-    letterSpacing: 1.2,
-    lineHeight: 16,
+    letterSpacing: 1.3,
+    lineHeight: 17.33,
   );
   static final caseTitle = _caslon(32, AppColors.textDark, lineHeight: 30);
   static final caseOrigin = _caslon(
@@ -453,66 +451,72 @@ abstract final class AppTextStyles {
 
   /// "CHARGES FILED", "CASE SUMMARY", "ARGUMENTS".
   static final caseSectionLabel = _dmSans(
-    12,
+    13,
     FontWeight.w400,
     AppColors.brown,
-    letterSpacing: 1.2,
-    lineHeight: 15,
+    letterSpacing: 1.3,
+    lineHeight: 16.25,
   );
 
   // Charges and summary
-  static final caseChargeBullet = _inter(12, FontWeight.w400, AppColors.brown);
+  static final caseChargeBullet = _inter(13, FontWeight.w400, AppColors.brown);
   static final caseCharge = _caslon(16, AppColors.textDark, lineHeight: 21);
   static final caseSummary = _caslon(16, AppColors.textDark, lineHeight: 22.75);
   static final caseToggleSelected = _dmSans(
-    10,
+    12,
     FontWeight.w700,
     AppColors.beige,
-    letterSpacing: 0.5,
-    lineHeight: 15,
+    letterSpacing: 0.6,
+    lineHeight: 18,
   );
   static final caseToggleIdle = _dmSans(
-    10,
+    12,
     FontWeight.w400,
     AppColors.textSubtle,
-    letterSpacing: 0.5,
-    lineHeight: 15,
+    letterSpacing: 0.6,
+    lineHeight: 18,
   );
 
   // Arguments
   static final argumentsCount = _dmSans(
-    10,
+    12,
     FontWeight.w700,
     AppColors.brown,
-    lineHeight: 15,
+    lineHeight: 18,
   );
   static final argumentCardLabel = _dmSans(
-    9,
+    11,
     FontWeight.w400,
     AppColors.textSubtle,
-    letterSpacing: 1.8,
-    lineHeight: 13.5,
+    letterSpacing: 2.2,
+    lineHeight: 16.5,
   );
   static final argumentIntroTitle = _caslon(
     32,
     AppColors.textDark,
     lineHeight: 33,
   );
-  static final argumentText = _caslon(28, AppColors.textDark, lineHeight: 31);
+  // DM Sans rather than the display serif: easier to read in long sentences.
+  static final argumentText = _dmSans(
+    20,
+    FontWeight.w400,
+    AppColors.textDark,
+    lineHeight: 28,
+  );
 
   // Verdict
   static final rulingEyebrow = _dmSans(
-    12,
+    13,
     FontWeight.w400,
     AppColors.textSubtle,
-    lineHeight: 30,
+    lineHeight: 32.5,
   );
   static final rulingTitle = _caslon(24, AppColors.text, lineHeight: 30);
   static final rulingHint = _inter(
-    12,
+    13,
     FontWeight.w400,
     AppColors.textSubtle,
-    lineHeight: 16,
+    lineHeight: 17.33,
   );
   static final verdictTitle = _inter(
     14,
@@ -525,10 +529,10 @@ abstract final class AppTextStyles {
     color: AppColors.white,
   );
   static final verdictSubtitle = _inter(
-    12,
+    13,
     FontWeight.w400,
     AppColors.textSubtle,
-    lineHeight: 16,
+    lineHeight: 17.33,
   );
   static final verdictValue = _inter(
     13,
@@ -546,22 +550,22 @@ abstract final class AppTextStyles {
     lineHeight: 20,
   );
   static final textButton = _dmSans(
-    12,
+    13,
     FontWeight.w400,
     AppColors.textSubtle,
-    letterSpacing: 0.6,
-    lineHeight: 16,
+    letterSpacing: 0.65,
+    lineHeight: 17.33,
   );
 
   // Result screen
 
   /// "✗ INCORRECT VERDICT"; the color comes from the outcome.
   static final resultOutcomeLabel = _dmSans(
-    12,
+    13,
     FontWeight.w400,
     AppColors.resultIncorrect,
-    letterSpacing: 3,
-    lineHeight: 16,
+    letterSpacing: 3.25,
+    lineHeight: 17.33,
   );
   static final resultOutcomeTitle = _caslon(
     24,
@@ -571,11 +575,11 @@ abstract final class AppTextStyles {
 
   /// "YOU RULED", "COURT RULED".
   static final resultCardLabel = _dmSans(
-    12,
+    13,
     FontWeight.w400,
     AppColors.textSubtle,
-    letterSpacing: 0.9,
-    lineHeight: 13.5,
+    letterSpacing: 0.97,
+    lineHeight: 14.62,
   );
 
   /// The verdict buttons inside those cards; the color comes from the outcome.
@@ -589,11 +593,11 @@ abstract final class AppTextStyles {
 
   /// "ACTUAL SENTENCE", "WHY THE COURT DECIDED THIS".
   static final resultSectionLabel = _dmSans(
-    12,
+    13,
     FontWeight.w400,
     AppColors.textSubtle,
-    letterSpacing: 1,
-    lineHeight: 15,
+    letterSpacing: 1.08,
+    lineHeight: 16.25,
   );
   static final resultSentence = _caslon(20, AppColors.textDark, lineHeight: 26);
   static final resultReasoning = _caslon(
@@ -602,10 +606,10 @@ abstract final class AppTextStyles {
     lineHeight: 22.75,
   );
   static final resultOrigin = _dmSans(
-    12,
+    13,
     FontWeight.w400,
     AppColors.textSubtle,
-    lineHeight: 15,
+    lineHeight: 16.25,
   );
   static final resultNextCase = _dmSans(
     14,

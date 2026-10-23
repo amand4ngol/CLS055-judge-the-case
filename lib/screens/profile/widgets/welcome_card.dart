@@ -5,6 +5,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../models.dart';
 import '../../../shared/widgets/app_svg.dart';
+import '../../../shared/widgets/tap_target.dart';
+import 'ranks_dialog.dart';
 
 class WelcomeCard extends StatelessWidget {
   const WelcomeCard({super.key, required this.player});
@@ -50,11 +52,7 @@ class WelcomeCard extends StatelessWidget {
                             'Judge ${player.name}',
                             style: AppTextStyles.profileName,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            player.rank.label,
-                            style: AppTextStyles.profileRank,
-                          ),
+                          _RankButton(progress),
                         ],
                       ),
                     ),
@@ -115,6 +113,56 @@ class WelcomeCard extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(color: AppColors.profileCircle, width: 0.624),
+      ),
+    );
+  }
+}
+
+/// "Rank: Court Clerk ⓘ"; opens the list of every rank.
+class _RankButton extends StatelessWidget {
+  const _RankButton(this.progress);
+
+  final RankProgress progress;
+
+  @override
+  Widget build(BuildContext context) {
+    // Its own semantics node, so it is not merged into the card's text.
+    return Semantics(
+      container: true,
+      child: TapTarget(
+        label: 'Rank: ${progress.rank.label}. Show all ranks',
+        onTap: () => RanksDialog.show(context, progress),
+        // The label above already says it; the text is not read twice.
+        child: ExcludeSemantics(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Text.rich(
+                    TextSpan(
+                      text: 'Rank: ',
+                      children: [
+                        TextSpan(
+                          text: progress.rank.label,
+                          style: AppTextStyles.profileRankValue,
+                        ),
+                      ],
+                    ),
+                    style: AppTextStyles.profileRank,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Icon(
+                  Icons.info_outline,
+                  size: 16,
+                  color: AppTextStyles.profileRank.color,
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -4,8 +4,8 @@ abstract final class AppAssets {
   static const profile = 'assets/icons/profile.svg';
 
   // Icons
-  static const caseIcon = 'assets/icons/case_icon.svg';
-  static const check = 'assets/icons/check.svg';
+  /// Completed case medallion.
+  static const bookmark = 'assets/icons/bookmark.svg';
   static const lock = 'assets/icons/lock.svg';
 
   /// splash screen logo.

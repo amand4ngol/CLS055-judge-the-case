@@ -105,9 +105,11 @@ class _ResultScreenState extends State<ResultScreen> {
                               children: [
                                 LegalAreaBadge(courtCase.legalArea),
                                 const SizedBox(width: 12),
-                                Text(
-                                  courtCase.originLabel,
-                                  style: AppTextStyles.resultOrigin,
+                                Flexible(
+                                  child: Text(
+                                    courtCase.originLabel,
+                                    style: AppTextStyles.resultOrigin,
+                                  ),
                                 ),
                               ],
                             ),

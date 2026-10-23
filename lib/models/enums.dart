@@ -45,8 +45,8 @@ enum VerdictOption {
   prison('prison', 'Prison', 'Custodial sentence'),
   communityService('community_service', 'Community Service', 'Unpaid community work'),
   probation('probation', 'Probation', 'Supervised release'),
-  acquitted('acquitted', 'Acquitted', 'No conviction'),
-  caseDismissed('case_dismissed', 'Case Dismissed', 'No penalty imposed');
+  acquitted('acquitted', 'Acquitted', "Not guilty: the charges weren't proven"),
+  caseDismissed('case_dismissed', 'Case Dismissed', 'No penalty, even if the facts are proven');
 
   const VerdictOption(this.value, this.label, this.description);
   final String value;
