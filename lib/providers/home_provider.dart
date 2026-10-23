@@ -26,6 +26,7 @@ class HomeProvider extends ChangeNotifier {
   /// Increases on every case request, so a slow answer for a category the
   /// player already swiped away from is ignored.
   int _casesRequestId = 0;
+  bool _isGuideDismissed = false;
   bool _disposed = false;
 
   HomeStatus get status => _status;
@@ -64,6 +65,8 @@ class HomeProvider extends ChangeNotifier {
   Future<void> load() async {
     _status = HomeStatus.loading;
     _error = null;
+    // Another player may have signed in: their guide starts fresh.
+    _isGuideDismissed = false;
     _notify();
 
     try {
@@ -128,7 +131,24 @@ class HomeProvider extends ChangeNotifier {
       return;
     }
     _selectedCategoryIndex = index;
+    dismissGuide();
     await refreshCases();
+  }
+
+  /// The first-time guide over the chips and the case column, until the
+  /// player judges a case. Picking a category, opening a case or tapping a
+  /// tip hides it for this session.
+  bool get showsGuide =>
+      !_isGuideDismissed &&
+      _status == HomeStatus.ready &&
+      _categories.isNotEmpty &&
+      _player?.stats.casesJudged == 0;
+  // true;
+
+  void dismissGuide() {
+    if (_isGuideDismissed) return;
+    _isGuideDismissed = true;
+    _notify();
   }
 
   /// Called when the player comes back from a case: saves "Do not show this

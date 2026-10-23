@@ -16,13 +16,22 @@ import 'swipe_hint.dart';
 /// then the beige band with the swipeable case pillars.
 ///
 class CasesSection extends StatelessWidget {
-  const CasesSection({super.key, this.onCaseTap});
+  const CasesSection({
+    super.key,
+    this.onCaseTap,
+    this.categoriesKey,
+    this.casesKey,
+  });
 
   static const double backgroundTop = 100;
   static const double _backgroundHeight = 569;
   static const double height = backgroundTop + _backgroundHeight;
 
   final ValueChanged<CaseSlot>? onCaseTap;
+
+  /// Mark the category chips and the case board for the first-time tour.
+  final GlobalKey? categoriesKey;
+  final GlobalKey? casesKey;
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +90,7 @@ class CasesSection extends StatelessWidget {
         left: 0,
         right: 0,
         height: CaseColumn.height,
+        key: casesKey,
         child: home.isLoadingCases
             ? const Center(child: CircularProgressIndicator())
             : home.isCategoryHidden
@@ -99,6 +109,7 @@ class CasesSection extends StatelessWidget {
         left: 0,
         right: 0,
         height: CategoryChip.height,
+        key: categoriesKey,
         child: CategoryBar(
           categories: home.categories,
           selectedIndex: home.selectedCategoryIndex,

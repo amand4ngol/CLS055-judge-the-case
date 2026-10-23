@@ -13,6 +13,8 @@ class HomeHeader extends StatelessWidget {
     this.country,
     this.onCountryTap,
     this.onProfileTap,
+    this.countryKey,
+    this.profileKey,
   });
 
   static const double height = 56;
@@ -21,6 +23,10 @@ class HomeHeader extends StatelessWidget {
   final Country? country;
   final VoidCallback? onCountryTap;
   final VoidCallback? onProfileTap;
+
+  /// Mark the flag and the profile button for the first-time tour.
+  final GlobalKey? countryKey;
+  final GlobalKey? profileKey;
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +51,7 @@ class HomeHeader extends StatelessWidget {
               left: 20,
               top: 10,
               child: TapTarget(
+                key: countryKey,
                 label: 'Country: ${country.name}',
                 onTap: onCountryTap,
                 child: SizedBox.square(
@@ -59,7 +66,7 @@ class HomeHeader extends StatelessWidget {
           Positioned(
             right: 28,
             top: 6,
-            child: ProfileButton(onTap: onProfileTap),
+            child: ProfileButton(key: profileKey, onTap: onProfileTap),
           ),
         ],
       ),
