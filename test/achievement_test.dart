@@ -82,4 +82,54 @@ void main() {
     expect(find.byType(AchievementScreen), findsNothing);
     expect(actions, [ResultAction.home]);
   });
+  /// How visible the button is: the lowest opacity of the fades around it.
+  double buttonOpacity(WidgetTester tester) => tester
+      .widgetList<FadeTransition>(
+        find.ancestor(
+          of: find.text('NEXT CASE →'),
+          matching: find.byType(FadeTransition),
+        ),
+      )
+      .map((fade) => fade.opacity.value)
+      .reduce((a, b) => a < b ? a : b);
+
+  testWidgets('the entrance plays once and leaves everything in place', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(402, 874);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: AchievementScreen(achievement: Achievement.firstRuling),
+      ),
+    );
+
+    // Mid-entrance the button has not faded in yet.
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(buttonOpacity(tester), 0);
+
+    // The entrance and the glow end, so the screen settles.
+    await tester.pumpAndSettle();
+    expect(buttonOpacity(tester), 1);
+    expect(find.text('First ruling!'), findsOneWidget);
+  });
+
+  testWidgets('"Reduce motion" shows the screen at once', (tester) async {
+    tester.view.physicalSize = const Size(402, 874);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      const MediaQuery(
+        data: MediaQueryData(disableAnimations: true),
+        child: MaterialApp(
+          home: AchievementScreen(achievement: Achievement.firstRuling),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(buttonOpacity(tester), 1);
+    expect(tester.hasRunningAnimations, isFalse);
+  });
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/constants/app_assets.dart';
 import '../../core/theme/app_colors.dart';
@@ -11,8 +12,9 @@ import '../result/result_screen.dart';
 import '../result/widgets/result_header.dart';
 
 /// "New achievement!", shown after the result screen for each achievement
-/// the verdict just unlocked.
-class AchievementScreen extends StatelessWidget {
+/// the verdict just unlocked. It builds up in order: the banner slides in,
+/// the badge pops with a glow, the bench lands, then the text and button.
+class AchievementScreen extends StatefulWidget {
   const AchievementScreen({
     super.key,
     required this.achievement,
@@ -50,7 +52,104 @@ class AchievementScreen extends StatelessWidget {
   final bool isLast;
 
   @override
+  State<AchievementScreen> createState() => _AchievementScreenState();
+}
+
+class _AchievementScreenState extends State<AchievementScreen>
+    with TickerProviderStateMixin {
+  /// The whole entrance; each part plays in its own slice of it.
+  late final AnimationController _intro = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1300),
+  );
+
+  /// The ring that ripples out of the badge a few times once it has landed.
+  late final AnimationController _glow = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  );
+
+  bool _started = false;
+  bool _buzzed = false;
+
+  late final Animation<Offset> _bannerSlide = Tween(
+    begin: const Offset(-1, 0),
+    end: Offset.zero,
+  ).animate(_part(0, 0.3, Curves.easeOutCubic));
+
+  late final Animation<double> _badgeScale = TweenSequence([
+    TweenSequenceItem(
+      tween: Tween(
+        begin: 0.0,
+        end: 1.15,
+      ).chain(CurveTween(curve: Curves.easeOut)),
+      weight: 70,
+    ),
+    TweenSequenceItem(
+      tween: Tween(
+        begin: 1.15,
+        end: 1.0,
+      ).chain(CurveTween(curve: Curves.easeInOut)),
+      weight: 30,
+    ),
+  ]).animate(_part(0.15, 0.6));
+
+  late final Animation<Offset> _benchDrop = Tween(
+    begin: const Offset(0, -0.25),
+    end: Offset.zero,
+  ).animate(_part(0.45, 0.85, Curves.bounceOut));
+
+  late final Animation<double> _benchFade = _part(0.45, 0.6);
+
+  late final Animation<Offset> _textRise = Tween(
+    begin: const Offset(0, 0.3),
+    end: Offset.zero,
+  ).animate(_part(0.7, 1, Curves.easeOut));
+
+  late final Animation<double> _textFade = _part(0.7, 1);
+
+  Animation<double> _part(
+    double begin,
+    double end, [
+    Curve curve = Curves.linear,
+  ]) => CurvedAnimation(
+    parent: _intro,
+    curve: Interval(begin, end, curve: curve),
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_started) return;
+    _started = true;
+    // "Reduce motion" in the phone's settings: show everything at once.
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _intro.value = 1;
+      return;
+    }
+    _intro.addListener(_buzzOnPop);
+    _intro.forward().whenCompleteOrCancel(() {
+      if (mounted) _glow.repeat(count: 3);
+    });
+  }
+
+  /// A light tap on the phone as the badge pops.
+  void _buzzOnPop() {
+    if (_buzzed || _intro.value < 0.15) return;
+    _buzzed = true;
+    HapticFeedback.mediumImpact();
+  }
+
+  @override
+  void dispose() {
+    _intro.dispose();
+    _glow.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final achievement = widget.achievement;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -71,22 +170,45 @@ class AchievementScreen extends StatelessWidget {
                       excludeSemantics: true,
                       child: Column(
                         children: [
-                          const _Banner(),
+                          ClipRect(
+                            child: SlideTransition(
+                              position: _bannerSlide,
+                              child: const _Banner(),
+                            ),
+                          ),
                           const SizedBox(height: 32),
-                          _Badge(achievement.badge),
+                          Stack(
+                            alignment: Alignment.center,
+                            clipBehavior: Clip.none,
+                            children: [
+                              _GlowRing(_glow),
+                              ScaleTransition(
+                                scale: _badgeScale,
+                                child: _Badge(achievement.badge),
+                              ),
+                            ],
+                          ),
                           const SizedBox(height: 8),
-                          _Bench(achievement.title),
+                          FadeTransition(
+                            opacity: _benchFade,
+                            child: SlideTransition(
+                              position: _benchDrop,
+                              child: _Bench(achievement.title),
+                            ),
+                          ),
                         ],
                       ),
                     ),
                     Container(height: 1, color: AppColors.textDark),
                     const SizedBox(height: 28),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
-                      child: Text(
-                        achievement.unlockMessage,
-                        textAlign: TextAlign.center,
-                        style: AppTextStyles.achievementMessage,
+                    _rise(
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Text(
+                          achievement.unlockMessage,
+                          textAlign: TextAlign.center,
+                          style: AppTextStyles.achievementMessage,
+                        ),
                       ),
                     ),
                   ],
@@ -98,27 +220,61 @@ class AchievementScreen extends StatelessWidget {
                 constraints: const BoxConstraints(maxWidth: 512),
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Keep up the good work, Judge',
-                        textAlign: TextAlign.center,
-                        style: AppTextStyles.achievementCheer,
-                      ),
-                      const SizedBox(height: 16),
-                      PrimaryButton(
-                        label: isLast ? 'NEXT CASE →' : 'CONTINUE →',
-                        height: 56,
-                        labelStyle: AppTextStyles.resultNextCase,
-                        onPressed: () =>
-                            Navigator.of(context).pop(ResultAction.nextCase),
-                      ),
-                    ],
+                  child: _rise(
+                    Column(
+                      children: [
+                        Text(
+                          'Keep up the good work, Judge',
+                          textAlign: TextAlign.center,
+                          style: AppTextStyles.achievementCheer,
+                        ),
+                        const SizedBox(height: 16),
+                        PrimaryButton(
+                          label: widget.isLast ? 'NEXT CASE →' : 'CONTINUE →',
+                          height: 56,
+                          labelStyle: AppTextStyles.resultNextCase,
+                          onPressed: () =>
+                              Navigator.of(context).pop(ResultAction.nextCase),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// The text and the button fade in and rise last.
+  Widget _rise(Widget child) => FadeTransition(
+    opacity: _textFade,
+    child: SlideTransition(position: _textRise, child: child),
+  );
+}
+
+/// Soft ring that ripples out of the badge and fades.
+class _GlowRing extends AnimatedWidget {
+  const _GlowRing(Animation<double> glow) : super(listenable: glow);
+
+  @override
+  Widget build(BuildContext context) {
+    final t = (listenable as Animation<double>).value;
+    // Hidden before the first ripple and after the last one.
+    if (t == 0) return const SizedBox.shrink();
+    return Transform.scale(
+      scale: 1 + 0.5 * t,
+      child: Container(
+        width: _Badge.size,
+        height: _Badge.size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: AppColors.statAccuracy.withValues(alpha: 0.6 * (1 - t)),
+            width: 6,
+          ),
         ),
       ),
     );
@@ -159,11 +315,13 @@ class _Badge extends StatelessWidget {
 
   final String badge;
 
+  static const double size = 125;
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 125,
-      height: 125,
+      width: size,
+      height: size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: AppColors.statAccuracy,
