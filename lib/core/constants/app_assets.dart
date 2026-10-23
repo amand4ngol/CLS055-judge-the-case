@@ -1,6 +1,9 @@
 abstract final class AppAssets {
   // Images
   static const pillar = 'assets/images/pillar.svg';
+
+  /// Judge's bench with a gavel on it.
+  static const judgeBench = 'assets/images/judge_bench.svg';
   static const profile = 'assets/icons/profile.svg';
 
   // Icons
