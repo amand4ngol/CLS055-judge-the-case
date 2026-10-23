@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../models.dart';
 import '../../providers/home_provider.dart';
+import '../achievement/achievement_screen.dart';
 import '../case/case_screen.dart';
 import '../profile/profile_screen.dart';
 import '../result/result_screen.dart';
@@ -55,9 +56,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: HomeHeader(
                         country: country,
                         onCountryTap: () => _setPickerOpen(true),
-                        onProfileTap: () => Navigator.of(
-                          context,
-                        ).push(ProfileScreen.route()),
+                        onProfileTap: () =>
+                            Navigator.of(context).push(ProfileScreen.route()),
                       ),
                     ),
                     const SizedBox(height: _gapAboveHero),
@@ -116,13 +116,20 @@ class _HomeScreenState extends State<HomeScreen> {
     final exit = await navigator.push(CaseScreen.route(slot.courtCase.id));
     await home.afterCase(exit);
     final result = exit?.result;
-    // TODO: show the achievement screen first when result.newAchievements
-    // is not empty
     if (result != null && mounted) await _showResult(result);
   }
 
+  /// The result, then one page per achievement it unlocked; the last page
+  /// left decides between home and the next case.
   Future<void> _showResult(RulingResult result) async {
-    final action = await Navigator.of(context).push(ResultScreen.route(result));
+    final navigator = Navigator.of(context);
+    var action = await navigator.push(ResultScreen.route(result));
+    if (result.newAchievements.isNotEmpty && mounted) {
+      action = await AchievementScreen.showAll(
+        navigator,
+        result.newAchievements,
+      );
+    }
     if (action == ResultAction.nextCase && mounted) await _openNextCase();
   }
 

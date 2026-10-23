@@ -118,6 +118,9 @@ abstract final class AppColors {
   /// "0/8 unlocked".
   static const achievementCount = Color(0xFF7C4F2A);
 
+  /// Edges of the "New achievement!" band; its middle is [statStreak].
+  static const achievementBannerEdge = Color(0xFFA2AFCB);
+
   // Settings screen
 
   /// "Preferences save automatically" note.

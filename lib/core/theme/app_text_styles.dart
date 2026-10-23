@@ -629,6 +629,39 @@ abstract final class AppTextStyles {
         decorationColor: AppColors.textSubtle,
       );
 
+  // Achievement screen
+
+  /// "New achievement!" on the blue band.
+  static final achievementBanner = _caslon(
+    40,
+    AppColors.white,
+    lineHeight: 48,
+  );
+
+  /// Roman numeral in the big round badge.
+  static final achievementBadgeLarge = _caslon(40, AppColors.white);
+
+  /// Achievement title written on the bench, next to the gavel.
+  static final achievementScreenTitle = _caslon(
+    28,
+    AppColors.textDark,
+    lineHeight: 32,
+  );
+
+  /// The achievement's own sentence, under the floor.
+  static final achievementMessage = _caslon(
+    20,
+    AppColors.text,
+    lineHeight: 26,
+  );
+
+  /// "Keep up the good work, Judge".
+  static final achievementCheer = _caslon(
+    24,
+    AppColors.textDark,
+    lineHeight: 30,
+  );
+
   // Trigger warning
 
   static final warningTitle = _dmSans(40, FontWeight.w300, AppColors.black);
