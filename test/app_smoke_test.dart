@@ -26,21 +26,14 @@ void main() {
   test('every bundled font and license file is in the asset bundle', () async {
     TestWidgetsFlutterBinding.ensureInitialized();
     const files = [
-      'assets/fonts/LibreCaslonDisplay/LibreCaslonDisplay-Regular.ttf',
-      'assets/fonts/DMSans/DMSans-Light.ttf',
+      'assets/fonts/Merriweather/Merriweather.ttf',
       'assets/fonts/DMSans/DMSans-Regular.ttf',
-      'assets/fonts/DMSans/DMSans-Medium.ttf',
-      'assets/fonts/DMSans/DMSans-SemiBold.ttf',
       'assets/fonts/DMSans/DMSans-Bold.ttf',
       'assets/fonts/DMSans/DMSans-ExtraBold.ttf',
       'assets/fonts/Inter/Inter-Regular.ttf',
-      'assets/fonts/Inter/Inter-SemiBold.ttf',
-      'assets/fonts/Roboto/Roboto-Regular.ttf',
-      'assets/fonts/Roboto/Roboto-Medium.ttf',
       'assets/fonts/DMSans/OFL.txt',
-      'assets/fonts/LibreCaslonDisplay/OFL.txt',
+      'assets/fonts/Merriweather/OFL.txt',
       'assets/fonts/Inter/OFL.txt',
-      'assets/fonts/Roboto/OFL.txt',
     ];
     for (final file in files) {
       final data = await rootBundle.load(file);

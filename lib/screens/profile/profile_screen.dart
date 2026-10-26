@@ -114,7 +114,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               dimension: 32,
               child: Center(
                 child: SizedBox.square(
-                  dimension: 20,
+                  dimension: 30,
                   child: AppSvg(AppAssets.settings),
                 ),
               ),
@@ -152,16 +152,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _section(
           divider: false,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('ACHIEVEMENTS', style: AppTextStyles.profileSectionBold),
-                Text(
-                  player.achievementsLabel,
-                  style: AppTextStyles.achievementCount,
-                ),
-              ],
-            ),
+            Text('ACHIEVEMENTS', style: AppTextStyles.profileSection),
             const SizedBox(height: 16),
             AchievementsGrid(player: player),
           ],

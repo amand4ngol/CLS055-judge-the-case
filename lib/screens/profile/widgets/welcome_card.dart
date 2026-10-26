@@ -134,33 +134,33 @@ class _RankButton extends StatelessWidget {
         onTap: () => RanksDialog.show(context, progress),
         // The label above already says it; the text is not read twice.
         child: ExcludeSemantics(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  child: Text.rich(
-                    TextSpan(
-                      text: 'Rank: ',
-                      children: [
-                        TextSpan(
-                          text: progress.rank.label,
-                          style: AppTextStyles.profileRankValue,
-                        ),
-                      ],
-                    ),
-                    style: AppTextStyles.profileRank,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: Text.rich(
+                  TextSpan(
+                    text: 'Rank: ',
+                    children: [
+                      TextSpan(
+                        text: progress.rank.label,
+                        style: AppTextStyles.profileRankValue,
+                      ),
+                    ],
                   ),
+                  style: AppTextStyles.profileRank,
                 ),
-                const SizedBox(width: 6),
-                Icon(
+              ),
+              // 44x44: the minimum touch target on iOS.
+              SizedBox.square(
+                dimension: 44,
+                child: Icon(
                   Icons.info_outline,
-                  size: 16,
+                  size: 22,
                   color: AppTextStyles.profileRank.color,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

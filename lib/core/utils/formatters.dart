@@ -1,7 +1,7 @@
 /// Display formats shared by the screens.
 abstract final class Formatters {
   /// 36500 -> "36,500 €"
-  static String euro(double amount) => '${_thousands(amount.round())} €';
+  static String euro(double amount) => '${thousands(amount.round())} €';
 
   /// 1 -> "1 month", 49 -> "49 months"
   static String months(double months) {
@@ -19,7 +19,8 @@ abstract final class Formatters {
     return '${local.day} ${months[local.month - 1]} ${local.year}';
   }
 
-  static String _thousands(int value) {
+  /// 36500 -> "36,500"
+  static String thousands(int value) {
     final digits = value.abs().toString();
     final buffer = StringBuffer(value < 0 ? '-' : '');
     for (var i = 0; i < digits.length; i++) {

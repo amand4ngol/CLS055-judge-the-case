@@ -42,12 +42,12 @@ class TriggerWarning extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text('Trigger warning', style: AppTextStyles.warningTitle),
-          const SizedBox(height: 26),
+          const SizedBox(height: 8),
           Text(
             'This case contains sensitive descriptions of $_topics.\n\n'
             'You can choose to filter out these cases or continue with the '
             'case.\n\n'
-            'Filter out specific topics in your profile settings',
+            'Filter out specific topics in your profile settings.',
             style: AppTextStyles.warningBody,
           ),
           const SizedBox(height: 24),
@@ -76,30 +76,27 @@ class _DontShowAgainCheckbox extends StatelessWidget {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () => onChanged(!value),
-        child: Padding(
-          padding: const EdgeInsets.only(left: 6),
-          child: Row(
-            children: [
-              Container(
-                width: 24.78,
-                height: 20.65,
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  border: Border.all(color: AppColors.black),
-                ),
-                child: value
-                    ? const Icon(Icons.check, size: 16, color: AppColors.black)
-                    : null,
+        child: Row(
+          children: [
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                border: Border.all(color: AppColors.black),
               ),
-              const SizedBox(width: 7),
-              Expanded(
-                child: Text(
-                  'Do not show this warning again',
-                  style: AppTextStyles.warningCheckbox,
-                ),
+              child: value
+                  ? const Icon(Icons.check, size: 16, color: AppColors.black)
+                  : null,
+            ),
+            const SizedBox(width: 7),
+            Expanded(
+              child: Text(
+                'Do not show this warning again',
+                style: AppTextStyles.warningCheckbox,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

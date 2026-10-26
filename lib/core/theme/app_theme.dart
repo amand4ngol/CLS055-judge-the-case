@@ -26,7 +26,7 @@ abstract final class AppTheme {
       scaffoldBackgroundColor: AppColors.beige,
       // Default for widgets without an AppTextStyles style (snackbars,
       // Material buttons).
-      fontFamily: AppFonts.dmSans,
+      fontFamily: AppFonts.merriweather,
       textTheme: AppTextStyles.textTheme,
       dividerTheme: const DividerThemeData(
         color: AppColors.hairline,

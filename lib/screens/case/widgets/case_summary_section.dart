@@ -103,7 +103,7 @@ class _ToggleButton extends StatelessWidget {
           height: 24,
           padding: const EdgeInsets.symmetric(horizontal: 10),
           alignment: Alignment.center,
-          color: selected ? AppColors.caseToggleSelected : null,
+          color: selected ? AppColors.brown : null,
           child: Text(
             label,
             style: selected
