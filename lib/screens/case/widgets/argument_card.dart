@@ -16,13 +16,20 @@ class ArgumentCard extends StatelessWidget {
 
   final CaseArgument? argument;
 
+  /// Each side has its own card; the intro shares the context card's paper.
+  Color get _background => switch (argument?.side) {
+    ArgumentSide.prosecution => AppColors.argumentAccusation,
+    ArgumentSide.defence => AppColors.argumentDefence,
+    ArgumentSide.context || null => AppColors.argumentCard,
+  };
+
   @override
   Widget build(BuildContext context) {
     final argument = this.argument;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
       decoration: BoxDecoration(
-        color: AppColors.argumentCard,
+        color: _background,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.argumentCardBorder, width: 0.696),
         boxShadow: const [
@@ -83,17 +90,27 @@ class _ArgumentContent extends StatelessWidget {
     ArgumentSide.context => 'CONTEXT',
   };
 
+  /// White text on the accusation and defence cards.
+  bool get _onDark => argument.side != ArgumentSide.context;
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(_label, style: AppTextStyles.argumentCardLabel),
+        Text(
+          _label,
+          style: _onDark
+              ? AppTextStyles.argumentCardLabel.copyWith(color: AppColors.white)
+              : AppTextStyles.argumentCardLabel,
+        ),
         const SizedBox(height: 12),
         Text(
           argument.text,
           textAlign: TextAlign.center,
-          style: AppTextStyles.argumentText,
+          style: _onDark
+              ? AppTextStyles.argumentText.copyWith(color: AppColors.white)
+              : AppTextStyles.argumentText,
         ),
       ],
     );

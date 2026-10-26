@@ -5,15 +5,14 @@ import 'app_fonts.dart';
 abstract final class AppTextStyles {
   // Type scale (used by the app theme and by screens)
 
-  static final display = _caslon(
+  static final display = _merriweather(
     48,
     AppColors.textDark,
-    letterSpacing: -1.8287,
     lineHeight: 51.204,
   );
-  static final headline = _caslon(32, AppColors.textDark);
-  static final title = _caslon(24, AppColors.textDark);
-  static final body = _caslon(16, AppColors.textDark, lineHeight: 22.1);
+  static final headline = _merriweather(32, AppColors.textDark);
+  static final title = _merriweather(24, AppColors.textDark);
+  static final body = _merriweather(16, AppColors.textDark, lineHeight: 22.1);
 
   /// Small caps label, 14.
   static final label = _dmSans(14, FontWeight.w700, AppColors.brown);
@@ -33,17 +32,17 @@ abstract final class AppTextStyles {
     headlineMedium: headline,
     titleLarge: title,
     bodyLarge: body,
-    bodyMedium: _dmSans(14, FontWeight.w400, AppColors.text),
+    bodyMedium: _merriweather(14, AppColors.text),
     labelLarge: label,
     labelMedium: labelSmall,
   );
 
   // Splash screen ("REAL COURT CASES" under it uses [labelSmall])
 
-  static final splashTitle = _caslon(
-    50,
+  /// Sized so "Judge the Case" fits on one line in the 261-wide `AppLogo`.
+  static final splashTitle = _merriweather(
+    36,
     AppColors.brown,
-    letterSpacing: -1.8287,
     lineHeight: 51.204,
   );
 
@@ -56,19 +55,18 @@ abstract final class AppTextStyles {
     letterSpacing: 0.8,
     lineHeight: 21,
   );
-  static final swipeHint = _dmSans(
+  static final swipeHint = _merriweather(
     13,
-    FontWeight.w400,
     AppColors.textMuted,
     letterSpacing: 0.87,
     lineHeight: 16.25,
   );
 
-  // Category chips (Material 3 segmented buttons in the design, so Roboto)
-  static final chipSelected = _roboto(
+  // Category chips
+  static final chipSelected = _merriweather(
     16,
-    FontWeight.w500,
     AppColors.white,
+    weight: FontWeight.w500,
     letterSpacing: 0.15,
     lineHeight: 24,
   );
@@ -81,14 +79,13 @@ abstract final class AppTextStyles {
     letterSpacing: 1.42,
     lineHeight: 14.25,
   );
-  static final titleCardTitle = _caslon(
+  static final titleCardTitle = _merriweather(
     15.98,
     AppColors.titleCardTitle,
     lineHeight: 16.779,
   );
-  static final titleCardSubtitle = _dmSans(
+  static final titleCardSubtitle = _merriweather(
     9.5,
-    FontWeight.w400,
     AppColors.titleCardSubtitle,
     lineHeight: 14.25,
   );
@@ -124,27 +121,25 @@ abstract final class AppTextStyles {
   );
 
   // Notice shown instead of an empty case column
-  static final hiddenCasesBody = _dmSans(
+  static final hiddenCasesBody = _merriweather(
     14,
-    FontWeight.w400,
     AppColors.text,
     lineHeight: 20,
   );
-  static final hiddenCasesButton = _dmSans(
+  static final hiddenCasesButton = _merriweather(
     14,
-    FontWeight.w500,
     AppColors.white,
+    weight: FontWeight.w500,
     letterSpacing: 0.35,
     lineHeight: 20,
   );
 
   // ---------------------------------------------------------------------------
-  // Home: country picker (Material 3 list in the design, so Roboto)
+  // Home: country picker
   // ---------------------------------------------------------------------------
 
-  static final countryPickerSearch = _roboto(
+  static final countryPickerSearch = _merriweather(
     16,
-    FontWeight.w400,
     AppColors.white,
     letterSpacing: 0.5,
     lineHeight: 24,
@@ -152,17 +147,16 @@ abstract final class AppTextStyles {
   static final countryPickerSearchHint = countryPickerSearch.copyWith(
     color: AppColors.white.withValues(alpha: 0.5),
   );
-  static final countryPickerName = _roboto(
+  static final countryPickerName = _merriweather(
     16,
-    FontWeight.w400,
     AppColors.countryPickerName,
     letterSpacing: 0.5,
     lineHeight: 24,
   );
-  static final countryPickerProgress = _roboto(
+  static final countryPickerProgress = _merriweather(
     14,
-    FontWeight.w500,
     AppColors.countryPickerProgress,
+    weight: FontWeight.w500,
     letterSpacing: 0.1,
     lineHeight: 20,
   );
@@ -176,7 +170,7 @@ abstract final class AppTextStyles {
 
   /// "CREATE ACCOUNT TO START JUDGING".
   static final accountEyebrow = _dmSans(
-    13,
+    14,
     FontWeight.w400,
     AppColors.brown,
     letterSpacing: 2.62,
@@ -184,23 +178,21 @@ abstract final class AppTextStyles {
   );
 
   /// "Welcome Back, Judge".
-  static final accountTitle = _caslon(
+  static final accountTitle = _merriweather(
     36,
     AppColors.brown,
-    letterSpacing: -1.8287,
     lineHeight: 51.204,
   );
 
   /// Label in the outline of a text field. Flutter draws a floating label at
   /// 75% of its size, so this is 16 to show the design's 12.
-  static final fieldLabel = _dmSans(
+  static final fieldLabel = _merriweather(
     16,
-    FontWeight.w400,
     AppColors.fieldLabel,
     letterSpacing: 0.4 / 0.75,
     lineHeight: 16 / 0.75,
   );
-  static final fieldHint = _caslon(
+  static final fieldHint = _merriweather(
     16,
     AppColors.brown,
     letterSpacing: 0.5,
@@ -209,19 +201,18 @@ abstract final class AppTextStyles {
   static final fieldInput = fieldHint.copyWith(color: AppColors.textDark);
 
   /// Error under the fields ("This username is already taken").
-  static final fieldError = _dmSans(
+  static final fieldError = _merriweather(
     13,
-    FontWeight.w400,
     AppColors.resultIncorrect,
     letterSpacing: 0.43,
     lineHeight: 17.33,
   );
 
   /// "Choose country to rule in" and the search field of the open dropdown.
-  static final countryDropdown = _dmSans(
+  static final countryDropdown = _merriweather(
     14,
-    FontWeight.w500,
     AppColors.white,
+    weight: FontWeight.w500,
     letterSpacing: 0.1,
     lineHeight: 20,
   );
@@ -230,7 +221,7 @@ abstract final class AppTextStyles {
   );
 
   /// "Create account", "Log in" (blue) and "Create new account" (white).
-  static final accountButton = _caslon(
+  static final accountButton = _merriweather(
     20,
     AppColors.white,
     letterSpacing: 0.15,
@@ -242,7 +233,7 @@ abstract final class AppTextStyles {
 
   /// "Forgot password?" and "I already have an account".
   static final accountLink =
-      _caslon(
+      _merriweather(
         16,
         AppColors.badgeRedText,
         letterSpacing: 0.15,
@@ -277,28 +268,30 @@ abstract final class AppTextStyles {
     letterSpacing: 2.5,
     lineHeight: 15,
   );
-  static final profileName = _dmSans(
+  static final profileName = _merriweather(
     24,
-    FontWeight.w700,
     AppColors.beige,
+    weight: FontWeight.w700,
     lineHeight: 32,
   );
-  static final profileUsername = _dmSans(
+  static final profileUsername = _merriweather(
     13,
-    FontWeight.w500,
     AppColors.beige.withValues(alpha: 0.8),
+    weight: FontWeight.w500,
     lineHeight: 17.33,
   );
-  static final profileRank = _dmSans(
+  static final profileRank = _merriweather(
     12,
-    FontWeight.w400,
     AppColors.beige.withValues(alpha: 0.6),
     lineHeight: 18,
   );
+
   /// "Court Clerk" in "Rank: Court Clerk", brighter than the "Rank: " before it.
-  static final profileRankValue = profileRank.copyWith(
-    fontWeight: FontWeight.w600,
-    color: AppColors.beige.withValues(alpha: 0.9),
+  static final profileRankValue = _merriweather(
+    12,
+    AppColors.beige.withValues(alpha: 0.9),
+    weight: FontWeight.w600,
+    lineHeight: 18,
   );
   static final profileCounter = _dmSans(
     11,
@@ -306,35 +299,25 @@ abstract final class AppTextStyles {
     AppColors.profileCounter,
     lineHeight: 16.5,
   );
-  static final profileMilestone = _dmSans(
+  static final profileMilestone = _merriweather(
     12,
-    FontWeight.w400,
     AppColors.beige.withValues(alpha: 0.8),
     lineHeight: 18,
   );
 
-  /// "CASES STATISTICS", "REVISE YOUR PREVIOUS CASES".
+  /// "CASES STATISTICS", "ACHIEVEMENTS", "REVISE YOUR PREVIOUS CASES".
   static final profileSection = _dmSans(
-    12,
+    14,
     FontWeight.w400,
     AppColors.textSubtle,
     letterSpacing: 1.92,
     lineHeight: 14.4,
   );
 
-  /// "ACHIEVEMENTS".
-  static final profileSectionBold = _dmSans(
-    13,
-    FontWeight.w700,
-    AppColors.textSubtle,
-    letterSpacing: 1.73,
-    lineHeight: 13,
-  );
-
   // Statistics tiles (Lora in the design, which the app does not bundle)
-  static final statValue = _caslon(20, AppColors.white, lineHeight: 28);
+  static final statValue = _merriweather(20, AppColors.white, lineHeight: 28);
   static final statLabel = _dmSans(
-    8,
+    14,
     FontWeight.w400,
     AppColors.white.withValues(alpha: 0.8),
     letterSpacing: 1.44,
@@ -342,48 +325,32 @@ abstract final class AppTextStyles {
   );
 
   // Previous cases
-  static final previousCaseTitle = _dmSans(
-    14,
-    FontWeight.w400,
+  static final previousCaseTitle = _merriweather(
+    16,
     AppColors.textDark,
-    lineHeight: 16,
+    lineHeight: 20,
   );
-
-  /// "Traffic · 2023" under a previous case.
-  static final previousCaseDetail = _dmSans(
-    12,
-    FontWeight.w400,
-    AppColors.textSubtle,
-    lineHeight: 16.8,
-  );
-  static final previousCaseAction = _dmSans(
+  static final previousCaseAction = _merriweather(
     13,
-    FontWeight.w400,
     AppColors.textSubtle,
     lineHeight: 13,
   );
 
   // Achievements
-  static final achievementCount = _dmSans(
-    10,
-    FontWeight.w700,
-    AppColors.achievementCount,
-    lineHeight: 15,
-  );
-  static final achievementBadge = _caslon(
+  static final achievementBadge = _dmSans(
     12,
+    FontWeight.w400,
     AppColors.textSubtle,
     lineHeight: 18,
   );
-  static final achievementTitle = _dmSans(
+  static final achievementTitle = _merriweather(
     13,
-    FontWeight.w600,
     AppColors.beige,
+    weight: FontWeight.w600,
     lineHeight: 17.33,
   );
-  static final achievementDescription = _dmSans(
+  static final achievementDescription = _merriweather(
     12,
-    FontWeight.w400,
     AppColors.beige.withValues(alpha: 0.65),
     lineHeight: 16.5,
   );
@@ -394,39 +361,36 @@ abstract final class AppTextStyles {
 
   /// "CONTENT PREFERENCES", "MANAGE ACCOUNT".
   static final settingsSection = _dmSans(
-    13,
+    14,
     FontWeight.w400,
     AppColors.textSubtle,
     letterSpacing: 1.73,
     lineHeight: 13,
   );
-  static final settingsBody = _dmSans(
+  static final settingsBody = _merriweather(
     14,
-    FontWeight.w400,
     AppColors.textDark,
     lineHeight: 22.75,
   );
 
   /// "Sensitive case filter", "Edit information", "Sign out".
-  static final settingsItem = _dmSans(
+  static final settingsItem = _merriweather(
     14,
-    FontWeight.w500,
     AppColors.countryPickerName,
+    weight: FontWeight.w500,
     letterSpacing: 0.1,
     lineHeight: 20,
   );
 
   /// "No filter selected".
-  static final settingsItemDetail = _dmSans(
+  static final settingsItemDetail = _merriweather(
     13,
-    FontWeight.w400,
     AppColors.fieldLabel,
     letterSpacing: 0.43,
     lineHeight: 17.33,
   );
-  static final settingsNote = _dmSans(
+  static final settingsNote = _merriweather(
     13,
-    FontWeight.w400,
     AppColors.textSubtle,
     lineHeight: 21.12,
   );
@@ -441,8 +405,12 @@ abstract final class AppTextStyles {
     letterSpacing: 1.3,
     lineHeight: 17.33,
   );
-  static final caseTitle = _caslon(32, AppColors.textDark, lineHeight: 30);
-  static final caseOrigin = _caslon(
+  static final caseTitle = _merriweather(
+    32,
+    AppColors.textDark,
+    lineHeight: 30,
+  );
+  static final caseOrigin = _merriweather(
     14,
     AppColors.textSubtle,
     letterSpacing: 0.6,
@@ -451,7 +419,7 @@ abstract final class AppTextStyles {
 
   /// "CHARGES FILED", "CASE SUMMARY", "ARGUMENTS".
   static final caseSectionLabel = _dmSans(
-    13,
+    14,
     FontWeight.w400,
     AppColors.brown,
     letterSpacing: 1.3,
@@ -460,8 +428,16 @@ abstract final class AppTextStyles {
 
   // Charges and summary
   static final caseChargeBullet = _inter(13, FontWeight.w400, AppColors.brown);
-  static final caseCharge = _caslon(16, AppColors.textDark, lineHeight: 21);
-  static final caseSummary = _caslon(16, AppColors.textDark, lineHeight: 22.75);
+  static final caseCharge = _merriweather(
+    16,
+    AppColors.textDark,
+    lineHeight: 21,
+  );
+  static final caseSummary = _merriweather(
+    16,
+    AppColors.textDark,
+    lineHeight: 22.75,
+  );
   static final caseToggleSelected = _dmSans(
     12,
     FontWeight.w700,
@@ -485,76 +461,65 @@ abstract final class AppTextStyles {
     lineHeight: 18,
   );
   static final argumentCardLabel = _dmSans(
-    11,
+    14,
     FontWeight.w400,
     AppColors.textSubtle,
     letterSpacing: 2.2,
     lineHeight: 16.5,
   );
-  static final argumentIntroTitle = _caslon(
+  static final argumentIntroTitle = _merriweather(
     32,
     AppColors.textDark,
     lineHeight: 33,
   );
-  // DM Sans rather than the display serif: easier to read in long sentences.
-  static final argumentText = _dmSans(
-    20,
-    FontWeight.w400,
+  static final argumentText = _merriweather(
+    24,
     AppColors.textDark,
-    lineHeight: 28,
+    lineHeight: 32,
   );
 
   // Verdict
   static final rulingEyebrow = _dmSans(
-    13,
+    14,
     FontWeight.w400,
     AppColors.textSubtle,
     lineHeight: 32.5,
   );
-  static final rulingTitle = _caslon(24, AppColors.text, lineHeight: 30);
-  static final rulingHint = _inter(
+  static final rulingTitle = _merriweather(24, AppColors.text, lineHeight: 30);
+  static final rulingHint = _merriweather(
     13,
-    FontWeight.w400,
     AppColors.textSubtle,
     lineHeight: 17.33,
   );
-  static final verdictTitle = _inter(
+  static final verdictTitle = _merriweather(
     14,
-    FontWeight.w600,
     AppColors.text,
+    weight: FontWeight.w600,
     letterSpacing: 0.35,
     lineHeight: 20,
   );
   static final verdictTitleSelected = verdictTitle.copyWith(
     color: AppColors.white,
   );
-  static final verdictSubtitle = _inter(
+  static final verdictSubtitle = _merriweather(
     13,
-    FontWeight.w400,
     AppColors.textSubtle,
     lineHeight: 17.33,
   );
-  static final verdictValue = _inter(
+  static final verdictValue = _merriweather(
     13,
-    FontWeight.w600,
     AppColors.white,
+    weight: FontWeight.w600,
     lineHeight: 20,
   );
 
   // Buttons
-  static final primaryButton = _dmSans(
+  static final primaryButton = _merriweather(
     14,
-    FontWeight.w600,
     AppColors.beige,
+    weight: FontWeight.w600,
     letterSpacing: 0.35,
     lineHeight: 20,
-  );
-  static final textButton = _dmSans(
-    13,
-    FontWeight.w400,
-    AppColors.textSubtle,
-    letterSpacing: 0.65,
-    lineHeight: 17.33,
   );
 
   // Result screen
@@ -567,7 +532,7 @@ abstract final class AppTextStyles {
     letterSpacing: 3.25,
     lineHeight: 17.33,
   );
-  static final resultOutcomeTitle = _caslon(
+  static final resultOutcomeTitle = _merriweather(
     24,
     AppColors.textDark,
     lineHeight: 32,
@@ -575,7 +540,7 @@ abstract final class AppTextStyles {
 
   /// "YOU RULED", "COURT RULED".
   static final resultCardLabel = _dmSans(
-    13,
+    14,
     FontWeight.w400,
     AppColors.textSubtle,
     letterSpacing: 0.97,
@@ -593,21 +558,24 @@ abstract final class AppTextStyles {
 
   /// "ACTUAL SENTENCE", "WHY THE COURT DECIDED THIS".
   static final resultSectionLabel = _dmSans(
-    13,
+    14,
     FontWeight.w400,
     AppColors.textSubtle,
     letterSpacing: 1.08,
     lineHeight: 16.25,
   );
-  static final resultSentence = _caslon(20, AppColors.textDark, lineHeight: 26);
-  static final resultReasoning = _caslon(
+  static final resultSentence = _merriweather(
+    20,
+    AppColors.textDark,
+    lineHeight: 26,
+  );
+  static final resultReasoning = _merriweather(
     16,
     AppColors.textDark,
     lineHeight: 22.75,
   );
-  static final resultOrigin = _dmSans(
+  static final resultOrigin = _merriweather(
     13,
-    FontWeight.w400,
     AppColors.textSubtle,
     lineHeight: 16.25,
   );
@@ -632,31 +600,35 @@ abstract final class AppTextStyles {
   // Achievement screen
 
   /// "New achievement!" on the blue band.
-  static final achievementBanner = _caslon(
+  static final achievementBanner = _merriweather(
     40,
     AppColors.white,
     lineHeight: 48,
   );
 
   /// Roman numeral in the big round badge.
-  static final achievementBadgeLarge = _caslon(40, AppColors.white);
+  static final achievementBadgeLarge = _dmSans(
+    40,
+    FontWeight.w400,
+    AppColors.white,
+  );
 
   /// Achievement title written on the bench, next to the gavel.
-  static final achievementScreenTitle = _caslon(
+  static final achievementScreenTitle = _merriweather(
     28,
     AppColors.textDark,
     lineHeight: 32,
   );
 
   /// The achievement's own sentence, under the floor.
-  static final achievementMessage = _caslon(
+  static final achievementMessage = _merriweather(
     20,
     AppColors.text,
     lineHeight: 26,
   );
 
   /// "Keep up the good work, Judge".
-  static final achievementCheer = _caslon(
+  static final achievementCheer = _merriweather(
     24,
     AppColors.textDark,
     lineHeight: 30,
@@ -664,47 +636,49 @@ abstract final class AppTextStyles {
 
   // First-time guide
 
-  static final guideTip = _dmSans(
-    14,
-    FontWeight.w400,
-    AppColors.brown,
-    lineHeight: 16.5,
-  );
+  static final guideTip = _merriweather(14, AppColors.brown, lineHeight: 16.5);
 
   /// "1/3" and "Skip".
-  static final guideProgress = _dmSans(
+  static final guideProgress = _merriweather(
     12,
-    FontWeight.w400,
     AppColors.textSubtle,
     lineHeight: 16,
   );
 
   /// "Next" and "Got it".
-  static final guideAction = _dmSans(
+  static final guideAction = _merriweather(
     14,
-    FontWeight.w700,
     AppColors.blue,
+    weight: FontWeight.w700,
     lineHeight: 20,
   );
 
   // Trigger warning
 
-  static final warningTitle = _dmSans(40, FontWeight.w300, AppColors.black);
-  static final warningBody = _dmSans(20, FontWeight.w300, AppColors.text);
-  static final warningCheckbox = _dmSans(16, FontWeight.w300, AppColors.black);
-  static final warningButton = _dmSans(20, FontWeight.w300, AppColors.black);
+  static final warningTitle = _merriweather(
+    40,
+    AppColors.black,
+    weight: FontWeight.w300,
+  );
+  static final warningBody = _merriweather(
+    20,
+    AppColors.text,
+    weight: FontWeight.w300,
+  );
+  static final warningCheckbox = _merriweather(
+    16,
+    AppColors.black,
+    weight: FontWeight.w300,
+  );
+  static final warningButton = _merriweather(
+    20,
+    AppColors.black,
+    weight: FontWeight.w300,
+  );
 
   // ---------------------------------------------------------------------------
   // Builders
   // ---------------------------------------------------------------------------
-
-  static TextStyle _roboto(
-    double size,
-    FontWeight weight,
-    Color color, {
-    double letterSpacing = 0,
-    double? lineHeight,
-  }) => _style(AppFonts.roboto, size, weight, color, letterSpacing, lineHeight);
 
   static TextStyle _inter(
     double size,
@@ -722,20 +696,29 @@ abstract final class AppTextStyles {
     double? lineHeight,
   }) => _style(AppFonts.dmSans, size, weight, color, letterSpacing, lineHeight);
 
-  /// Libre Caslon Display only comes in one weight.
-  static TextStyle _caslon(
+  /// Merriweather is a variable font: its weight is set on the `wght` axis,
+  /// and its optical size follows the font size, as browsers do, so large
+  /// titles get the finer display shapes.
+  static TextStyle _merriweather(
     double size,
     Color color, {
+    FontWeight weight = FontWeight.w400,
     double letterSpacing = 0,
     double? lineHeight,
-  }) => _style(
-    AppFonts.caslon,
-    size,
-    FontWeight.w400,
-    color,
-    letterSpacing,
-    lineHeight,
-  );
+  }) =>
+      _style(
+        AppFonts.merriweather,
+        size,
+        weight,
+        color,
+        letterSpacing,
+        lineHeight,
+      ).copyWith(
+        fontVariations: [
+          FontVariation.weight(weight.value.toDouble()),
+          FontVariation('opsz', size.clamp(18, 144)),
+        ],
+      );
 
   static TextStyle _style(
     String family,

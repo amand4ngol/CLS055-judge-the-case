@@ -121,7 +121,6 @@ class _CaseContent extends StatelessWidget {
                   onPrisonChanged: provider.setPrison,
                   onSliderChangeEnd: provider.saveDraft,
                   onDeliver: () => _deliver(context),
-                  onReturnHome: () => CaseScreen._leave(context),
                 ),
               ],
             ),

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../core/constants/app_assets.dart';
 import '../../../core/theme/app_colors.dart';
@@ -155,13 +156,125 @@ class VerdictOptionTile extends StatelessWidget {
             const SizedBox(width: 14),
             SizedBox(
               width: 105,
-              child: Text(
-                _value ?? '',
-                textAlign: TextAlign.right,
-                style: AppTextStyles.verdictValue,
+              child: _ValueField(
+                value: isFine ? verdict.fineEur! : verdict.prisonMonths!,
+                isFine: isFine,
+                onSubmitted: (value) {
+                  isFine ? onFineChanged(value) : onPrisonChanged(value);
+                  onSliderChangeEnd();
+                },
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The amount next to the slider. The player can also type it: the value is
+/// applied, within the slider's limits, when the field loses focus.
+class _ValueField extends StatefulWidget {
+  const _ValueField({
+    required this.value,
+    required this.isFine,
+    required this.onSubmitted,
+  });
+
+  final double value;
+  final bool isFine;
+  final ValueChanged<double> onSubmitted;
+
+  @override
+  State<_ValueField> createState() => _ValueFieldState();
+}
+
+class _ValueFieldState extends State<_ValueField> {
+  final _focus = FocusNode();
+  late final _controller = TextEditingController(text: _format(widget.value));
+
+  /// Fines in euros (36,500); prison in years with up to two decimals
+  /// (49 months -> 4.08), since that is how sentences are usually given.
+  String _format(double value) {
+    if (widget.isFine) return Formatters.thousands(value.round());
+    return (value / 12).toStringAsFixed(2).replaceFirst(RegExp(r'\.?0+$'), '');
+  }
+
+  /// The typed text as euros or months, or null if it holds no number.
+  /// Prison accepts a decimal point or comma (1.5 or 1,5 years).
+  double? _parse(String text) {
+    if (widget.isFine) {
+      return double.tryParse(text.replaceAll(RegExp(r'[^0-9]'), ''));
+    }
+    final years = double.tryParse(
+      text.replaceAll(',', '.').replaceAll(RegExp(r'[^0-9.]'), ''),
+    );
+    return years == null ? null : (years * 12).roundToDouble();
+  }
+
+  String get _unit =>
+      widget.isFine ? '€' : (_format(widget.value) == '1' ? 'year' : 'years');
+
+  @override
+  void initState() {
+    super.initState();
+    _focus.addListener(_onFocusChanged);
+  }
+
+  @override
+  void didUpdateWidget(_ValueField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Follow the slider, but never rewrite what the player is typing.
+    if (!_focus.hasFocus) _controller.text = _format(widget.value);
+  }
+
+  void _onFocusChanged() {
+    if (_focus.hasFocus) {
+      _controller.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: _controller.text.length,
+      );
+      return;
+    }
+    final typed = _parse(_controller.text);
+    if (typed == null) {
+      _controller.text = _format(widget.value);
+    } else {
+      widget.onSubmitted(typed);
+    }
+  }
+
+  @override
+  void dispose() {
+    _focus.dispose();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _controller,
+      focusNode: _focus,
+      keyboardType: TextInputType.numberWithOptions(decimal: !widget.isFine),
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'[0-9,.]')),
+        LengthLimitingTextInputFormatter(10),
+      ],
+      textAlign: TextAlign.right,
+      style: AppTextStyles.verdictValue,
+      cursorColor: AppColors.white,
+      onTapOutside: (_) => _focus.unfocus(),
+      decoration: InputDecoration(
+        isDense: true,
+        contentPadding: EdgeInsets.zero,
+        suffixText: _unit,
+        suffixStyle: AppTextStyles.verdictValue,
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Color.fromRGBO(255, 255, 255, 0.4)),
+        ),
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: AppColors.white),
         ),
       ),
     );

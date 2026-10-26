@@ -6,8 +6,7 @@ import '../../../shared/widgets/primary_button.dart';
 import 'case_section.dart';
 import 'verdict_option_tile.dart';
 
-/// "YOUR TIME TO RULE": the verdict buttons, "Deliver Verdict" and
-/// "Return to Home".
+/// "YOUR TIME TO RULE": the verdict buttons and "Deliver Verdict".
 class VerdictSection extends StatelessWidget {
   const VerdictSection({
     super.key,
@@ -19,7 +18,6 @@ class VerdictSection extends StatelessWidget {
     required this.onPrisonChanged,
     required this.onSliderChangeEnd,
     required this.onDeliver,
-    required this.onReturnHome,
   });
 
   final PlayerVerdict verdict;
@@ -30,7 +28,6 @@ class VerdictSection extends StatelessWidget {
   final ValueChanged<double> onPrisonChanged;
   final VoidCallback onSliderChangeEnd;
   final VoidCallback onDeliver;
-  final VoidCallback onReturnHome;
 
   @override
   Widget build(BuildContext context) {
@@ -61,13 +58,6 @@ class VerdictSection extends StatelessWidget {
             label: 'Deliver Verdict',
             onPressed: canDeliver ? onDeliver : null,
             isLoading: isDelivering,
-          ),
-          SizedBox(
-            height: 52,
-            child: TextButton(
-              onPressed: onReturnHome,
-              child: Text('← RETURN TO HOME', style: AppTextStyles.textButton),
-            ),
           ),
         ],
       ),

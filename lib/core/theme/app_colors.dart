@@ -108,15 +108,16 @@ abstract final class AppColors {
   static const statAccuracy = Color(0xFF6579A6);
   static const statStreak = Color(0xFF929FBC);
 
-  /// Dot in front of each previous case.
+  /// Previous case buttons, and the triangle in front of each title: green
+  /// when the player matched the court, red when not, grey while unknown.
+  static const previousCaseCard = Color(0xFFECE7DC);
+  static const previousCaseCorrect = Color(0xFF609338);
+  static const previousCaseIncorrect = Color(0xFF892F2A);
   static const previousCaseDot = Color(0xFFA9A18F);
 
   static const achievementCard = Color(0xFF929FBC);
   static const achievementCardBorder = Color(0xFF8F9CB8);
   static const achievementBadgeBorder = Color.fromRGBO(30, 20, 10, 0.1);
-
-  /// "0/8 unlocked".
-  static const achievementCount = Color(0xFF7C4F2A);
 
   /// Edges of the "New achievement!" band; its middle is [statStreak].
   static const achievementBannerEdge = Color(0xFFA2AFCB);
@@ -147,14 +148,16 @@ abstract final class AppColors {
   static const casePanel = Color(0xFFE3DCCF);
   static const casePanelBorder = Color.fromRGBO(76, 71, 61, 0.12);
 
-  /// Selected half of the Short / Long summary toggle.
-  static const caseToggleSelected = Color(0xFF263027);
-
   /// Argument progress segments not read yet.
   static const caseProgressInactive = Color(0xFFD6CCBC);
 
   /// Argument cards.
   static const argumentCard = Color(0xFFEDE7DB);
+
+  /// Accusation and defence cards (white text); context cards use
+  /// [argumentCard].
+  static const argumentAccusation = Color(0xFFB1ACA1);
+  static const argumentDefence = brown;
   static const argumentCardBorder = Color.fromRGBO(76, 71, 61, 0.15);
   static const argumentScalesBackground = Color.fromRGBO(124, 79, 42, 0.08);
   static const argumentScalesBorder = Color.fromRGBO(124, 79, 42, 0.25);
@@ -192,7 +195,7 @@ abstract final class AppColors {
 
   // Trigger warning
 
-  static const warningOverlay = Color.fromRGBO(255, 255, 255, 0.85);
+  static const warningOverlay = Color.fromRGBO(255, 255, 255, 0.95);
   static const warningButton = Color(0xFFD9D9D9);
   static const black = Color(0xFF000000);
 }
