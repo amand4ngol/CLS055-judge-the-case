@@ -23,7 +23,7 @@ class ProfileButton extends StatelessWidget {
         height: size,
         alignment: Alignment.center,
         decoration: const BoxDecoration(
-          color: AppColors.profileButton,
+          color: AppColors.brown,
           shape: BoxShape.circle,
         ),
         child: const SizedBox.square(

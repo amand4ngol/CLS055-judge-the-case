@@ -145,7 +145,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               'REVISE YOUR PREVIOUS CASES',
               style: AppTextStyles.profileSection,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 16),
             PreviousCases(rulings: rulings, onPreview: _preview),
           ],
         ),

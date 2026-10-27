@@ -3,12 +3,16 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 
+/// What the hand on the target acts out.
+enum GuideGesture { tap, swipe }
+
 class GuideStep {
   const GuideStep({
     required this.target,
     required this.text,
     this.focus,
     this.isRound = false,
+    this.gesture = GuideGesture.tap,
   });
 
   final GlobalKey target;
@@ -20,10 +24,13 @@ class GuideStep {
 
   /// Lights up a circle instead of a rounded rectangle.
   final bool isRound;
+
+  final GuideGesture gesture;
 }
 
 /// First-time tour of the home screen: dims everything but one target at a
-/// time, with a bouncing arrow and a tip. "Next" moves on, "Skip" and the
+/// time, with a hand tapping (or swiping) it and a tip next to it. Doing
+/// what the hand shows on the target, or "Next", moves on; "Skip" and the
 /// last step's "Got it" close it.
 class GuideTour extends StatefulWidget {
   const GuideTour({super.key, required this.steps, required this.onDone});
@@ -38,13 +45,12 @@ class GuideTour extends StatefulWidget {
 class _GuideTourState extends State<GuideTour>
     with SingleTickerProviderStateMixin {
   static const double _holePadding = 8;
-  static const double _arrowSize = 32;
-  static const double _gap = 6;
+  static const double _gap = 16;
 
-  /// The arrow bounces a few times on each step, then rests.
-  late final AnimationController _bounce = AnimationController(
+  /// The hand acts out the gesture a few times on each step, then rests.
+  late final AnimationController _touch = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 600),
+    duration: const Duration(milliseconds: 1400),
   );
 
   int _index = 0;
@@ -52,6 +58,9 @@ class _GuideTourState extends State<GuideTour>
   /// Where the current target is, in this widget's coordinates. Null until
   /// the step is measured.
   Rect? _hole;
+
+  /// Whether the current drag started on the target.
+  bool _dragOnTarget = false;
 
   GuideStep get _step => widget.steps[_index];
   bool get _isLast => _index == widget.steps.length - 1;
@@ -64,12 +73,13 @@ class _GuideTourState extends State<GuideTour>
 
   @override
   void dispose() {
-    _bounce.dispose();
+    _touch.dispose();
     super.dispose();
   }
 
   void _next() {
     if (_isLast) return widget.onDone();
+    _touch.reset();
     setState(() {
       _index++;
       _hole = null;
@@ -96,9 +106,13 @@ class _GuideTourState extends State<GuideTour>
       var rect = box.localToGlobal(Offset.zero, ancestor: tour) & box.size;
       rect = _step.focus?.call(rect) ?? rect;
       setState(() => _hole = rect.inflate(_holePadding));
-      _bounce.repeat(reverse: true, count: 8);
+      if (!MediaQuery.of(context).disableAnimations) {
+        _touch.repeat(count: 4);
+      }
     });
   }
+
+  bool _onTarget(Offset position) => _hole?.contains(position) ?? false;
 
   @override
   Widget build(BuildContext context) {
@@ -110,11 +124,25 @@ class _GuideTourState extends State<GuideTour>
         final below = hole == null || hole.center.dy < screen.height / 2;
         return Stack(
           children: [
-            // Taps on the dimmed page go nowhere; the tip drives the tour.
+            // Doing the step's gesture on the target moves on, without the
+            // target's own action (which would leave the home screen).
+            // Anywhere else, touches go nowhere.
             Positioned.fill(
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
-                onTap: () {},
+                onTapUp: (details) {
+                  if (_step.gesture == GuideGesture.tap &&
+                      _onTarget(details.localPosition)) {
+                    _next();
+                  }
+                },
+                onHorizontalDragStart: (details) =>
+                    _dragOnTarget = _onTarget(details.localPosition),
+                onHorizontalDragEnd: (details) {
+                  if (_step.gesture == GuideGesture.swipe && _dragOnTarget) {
+                    _next();
+                  }
+                },
                 child: CustomPaint(
                   painter: _DimPainter(hole: hole, isRound: _step.isRound),
                 ),
@@ -122,32 +150,15 @@ class _GuideTourState extends State<GuideTour>
             ),
             if (hole != null) ...[
               Positioned(
-                left: (hole.center.dx - _arrowSize / 2).clamp(
-                  8,
-                  screen.width - _arrowSize - 8,
-                ),
-                top: below ? hole.bottom + _gap : null,
-                bottom: below ? null : screen.height - hole.top + _gap,
-                child: AnimatedBuilder(
-                  animation: _bounce,
-                  builder: (context, child) => Transform.translate(
-                    offset: Offset(0, (below ? 1 : -1) * 8 * _bounce.value),
-                    child: child,
-                  ),
-                  child: Icon(
-                    below ? Icons.arrow_upward : Icons.arrow_downward,
-                    size: _arrowSize,
-                    color: AppColors.white,
-                  ),
-                ),
+                left: hole.center.dx - _TouchHint.fingertip.dx,
+                top: hole.center.dy - _TouchHint.fingertip.dy,
+                child: _TouchHint(animation: _touch, gesture: _step.gesture),
               ),
               Positioned(
                 left: 16,
                 right: 16,
-                top: below ? hole.bottom + _gap + _arrowSize + 16 : null,
-                bottom: below
-                    ? null
-                    : screen.height - hole.top + _gap + _arrowSize + 16,
+                top: below ? hole.bottom + _gap : null,
+                bottom: below ? null : screen.height - hole.top + _gap,
                 child: Center(
                   child: _TipCard(
                     text: _step.text,
@@ -164,6 +175,107 @@ class _GuideTourState extends State<GuideTour>
       },
     );
   }
+}
+
+/// A white hand whose fingertip sits on the target: it presses with a
+/// ripple for a tap, or slides right to left for a swipe.
+class _TouchHint extends StatelessWidget {
+  const _TouchHint({required this.animation, required this.gesture});
+
+  static const double _size = 44;
+  static const double _rippleSize = 56;
+
+  /// Where the tip of the finger is in the hand icon.
+  static const Offset fingertip = Offset(21, 11);
+
+  /// How far the hand travels each way for a swipe.
+  static const double _swipeReach = 40;
+
+  final Animation<double> animation;
+  final GuideGesture gesture;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: AnimatedBuilder(
+        animation: animation,
+        builder: (context, _) => switch (gesture) {
+          GuideGesture.tap => _tap(animation.value),
+          GuideGesture.swipe => _swipe(animation.value),
+        },
+      ),
+    );
+  }
+
+  Widget _tap(double t) {
+    // Press down, let go, then the ripple spreads out from the fingertip.
+    final press = t < 0.2
+        ? 0.0
+        : t < 0.35
+        ? (t - 0.2) / 0.15
+        : t < 0.5
+        ? 1 - (t - 0.35) / 0.15
+        : 0.0;
+    final ripple = t < 0.35 ? 0.0 : (t - 0.35) / 0.65;
+    return SizedBox.square(
+      dimension: _size,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          if (ripple > 0)
+            Positioned(
+              left: fingertip.dx - _rippleSize / 2,
+              top: fingertip.dy - _rippleSize / 2,
+              child: Opacity(
+                opacity: 1 - ripple,
+                child: Transform.scale(
+                  scale: 0.3 + 0.7 * ripple,
+                  child: Container(
+                    width: _rippleSize,
+                    height: _rippleSize,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.guideTouch, width: 3),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          Transform.scale(
+            scale: 1 - 0.15 * press,
+            alignment: Alignment(
+              fingertip.dx / _size * 2 - 1,
+              fingertip.dy / _size * 2 - 1,
+            ),
+            child: _hand,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _swipe(double t) {
+    final slide = Curves.easeInOut.transform(t.clamp(0.1, 0.8) / 0.8);
+    final opacity = t < 0.1
+        ? t / 0.1
+        : t > 0.8
+        ? 1 - (t - 0.8) / 0.2
+        : 1.0;
+    return Opacity(
+      opacity: opacity.clamp(0.0, 1.0),
+      child: Transform.translate(
+        offset: Offset(_swipeReach * (1 - 2 * slide), 0),
+        child: _hand,
+      ),
+    );
+  }
+
+  static const _hand = Icon(
+    Icons.touch_app,
+    size: _size,
+    color: AppColors.white,
+    shadows: [Shadow(color: AppColors.guideTouch, blurRadius: 6)],
+  );
 }
 
 /// Darkens the screen except around [hole].
