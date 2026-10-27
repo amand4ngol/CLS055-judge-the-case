@@ -330,10 +330,24 @@ abstract final class AppTextStyles {
     AppColors.textDark,
     lineHeight: 20,
   );
+  /// "Homicide · 2026" under a previous case.
+  static final previousCaseDetail = _merriweather(
+    13,
+    AppColors.textSubtle,
+    lineHeight: 18,
+  );
   static final previousCaseAction = _merriweather(
     13,
     AppColors.textSubtle,
     lineHeight: 13,
+  );
+
+  /// "View More" under the previous cases.
+  static final viewMoreButton = _merriweather(
+    16,
+    AppColors.white,
+    letterSpacing: 0.15,
+    lineHeight: 24,
   );
 
   // Achievements
