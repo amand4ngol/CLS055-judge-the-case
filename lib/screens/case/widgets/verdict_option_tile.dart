@@ -82,7 +82,7 @@ class VerdictOptionTile extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        _VerdictIcon(option),
+                        _VerdictIcon(option, selected: selected),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Column(
@@ -97,7 +97,9 @@ class VerdictOptionTile extends StatelessWidget {
                               ),
                               Text(
                                 _subtitle,
-                                style: AppTextStyles.verdictSubtitle,
+                                style: selected
+                                    ? AppTextStyles.verdictSubtitleSelected
+                                    : AppTextStyles.verdictSubtitle,
                               ),
                             ],
                           ),
@@ -193,27 +195,16 @@ class _ValueFieldState extends State<_ValueField> {
   final _focus = FocusNode();
   late final _controller = TextEditingController(text: _format(widget.value));
 
-  /// Fines in euros (36,500); prison in years with up to two decimals
-  /// (49 months -> 4.08), since that is how sentences are usually given.
-  String _format(double value) {
-    if (widget.isFine) return Formatters.thousands(value.round());
-    return (value / 12).toStringAsFixed(2).replaceFirst(RegExp(r'\.?0+$'), '');
-  }
+  /// Fines in euros (36,500), prison in whole months (49).
+  String _format(double value) =>
+      widget.isFine ? Formatters.thousands(value.round()) : '${value.round()}';
 
   /// The typed text as euros or months, or null if it holds no number.
-  /// Prison accepts a decimal point or comma (1.5 or 1,5 years).
-  double? _parse(String text) {
-    if (widget.isFine) {
-      return double.tryParse(text.replaceAll(RegExp(r'[^0-9]'), ''));
-    }
-    final years = double.tryParse(
-      text.replaceAll(',', '.').replaceAll(RegExp(r'[^0-9.]'), ''),
-    );
-    return years == null ? null : (years * 12).roundToDouble();
-  }
+  double? _parse(String text) =>
+      double.tryParse(text.replaceAll(RegExp(r'[^0-9]'), ''));
 
   String get _unit =>
-      widget.isFine ? '€' : (_format(widget.value) == '1' ? 'year' : 'years');
+      widget.isFine ? '€' : (widget.value.round() == 1 ? 'month' : 'months');
 
   @override
   void initState() {
@@ -256,9 +247,9 @@ class _ValueFieldState extends State<_ValueField> {
     return TextField(
       controller: _controller,
       focusNode: _focus,
-      keyboardType: TextInputType.numberWithOptions(decimal: !widget.isFine),
+      keyboardType: TextInputType.number,
       inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'[0-9,.]')),
+        FilteringTextInputFormatter.allow(RegExp(r'[0-9,]')),
         LengthLimitingTextInputFormatter(10),
       ],
       textAlign: TextAlign.right,
@@ -300,9 +291,21 @@ abstract final class _FineScale {
 }
 
 class _VerdictIcon extends StatelessWidget {
-  const _VerdictIcon(this.option);
+  const _VerdictIcon(this.option, {required this.selected});
 
   final VerdictOption option;
+
+  /// White on a selected card, like its text.
+  final bool selected;
+
+  /// Opaque white: the icons are drawn at 30% opacity, which a plain tint
+  /// would keep.
+  static const _white = ColorFilter.matrix([
+    0, 0, 0, 0, 255, //
+    0, 0, 0, 0, 255, //
+    0, 0, 0, 0, 255, //
+    0, 0, 0, 10 / 3, 0, //
+  ]);
 
   /// Asset and offset of the vector inside the 25x25 frame.
   (String, Offset)? get _icon => switch (option) {
@@ -330,12 +333,20 @@ class _VerdictIcon extends StatelessWidget {
     return SizedBox.square(
       dimension: 25,
       child: icon == null
-          ? const Icon(Icons.gavel, size: 22, color: AppColors.brown)
+          ? Icon(
+              Icons.gavel,
+              size: 22,
+              color: selected ? AppColors.white : AppColors.brown,
+            )
           : Padding(
               padding: EdgeInsets.only(left: icon.$2.dx, top: icon.$2.dy),
               child: Align(
                 alignment: Alignment.topLeft,
-                child: AppSvg(icon.$1, excludeFromSemantics: true),
+                child: AppSvg(
+                  icon.$1,
+                  excludeFromSemantics: true,
+                  colorFilter: selected ? _white : null,
+                ),
               ),
             ),
     );
