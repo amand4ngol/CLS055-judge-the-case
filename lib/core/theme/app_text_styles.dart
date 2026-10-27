@@ -656,22 +656,22 @@ abstract final class AppTextStyles {
   // Trigger warning
 
   static final warningTitle = _merriweather(
-    40,
+    32,
     AppColors.black,
     weight: FontWeight.w300,
   );
   static final warningBody = _merriweather(
-    20,
+    14,
     AppColors.text,
     weight: FontWeight.w300,
   );
   static final warningCheckbox = _merriweather(
-    16,
+    14,
     AppColors.black,
     weight: FontWeight.w300,
   );
   static final warningButton = _merriweather(
-    20,
+    16,
     AppColors.black,
     weight: FontWeight.w300,
   );

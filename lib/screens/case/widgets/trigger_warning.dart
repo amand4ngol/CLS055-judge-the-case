@@ -92,7 +92,7 @@ class _DontShowAgainCheckbox extends StatelessWidget {
             const SizedBox(width: 7),
             Expanded(
               child: Text(
-                'Do not show this warning again',
+                'Do not show again',
                 style: AppTextStyles.warningCheckbox,
               ),
             ),
@@ -115,7 +115,8 @@ class _EnterButton extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          width: 276,
+          // Narrower on small phones, where the panel is too.
+          constraints: const BoxConstraints(maxWidth: 276),
           height: 55.75,
           color: AppColors.warningButton,
           alignment: Alignment.center,

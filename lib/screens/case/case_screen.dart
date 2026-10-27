@@ -55,8 +55,8 @@ class CaseScreen extends StatelessWidget {
                       IgnorePointer(child: _CaseContent()),
                       Positioned(
                         top: _warningTop,
-                        left: 0,
-                        right: 0,
+                        left: 16,
+                        right: 16,
                         child: _Warning(),
                       ),
                     ],

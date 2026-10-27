@@ -142,8 +142,8 @@ class HomeProvider extends ChangeNotifier {
       !_isGuideDismissed &&
       _status == HomeStatus.ready &&
       _categories.isNotEmpty &&
-      _player?.stats.casesJudged == 0;
-  // true;
+      // _player?.stats.casesJudged == 0;
+      true;
 
   void dismissGuide() {
     if (_isGuideDismissed) return;
