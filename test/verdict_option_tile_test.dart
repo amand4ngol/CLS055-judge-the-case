@@ -56,32 +56,30 @@ void main() {
     expect(find.text('36,500'), findsOneWidget);
   });
 
-  testWidgets('prison is typed in years and saved in months', (tester) async {
+  testWidgets('prison is typed in months', (tester) async {
     final saved = await pumpTile(tester, VerdictOption.prison);
 
-    await typeAndLeave(tester, '1,5');
+    await typeAndLeave(tester, '18');
 
     expect(saved.single.prisonMonths, 18);
-    expect(find.text('1.5'), findsOneWidget);
+    expect(find.text('18'), findsOneWidget);
   });
 
   testWidgets('a typed amount stays within the slider limits', (tester) async {
     final saved = await pumpTile(tester, VerdictOption.prison);
 
-    await typeAndLeave(tester, '50');
+    await typeAndLeave(tester, '500');
 
     expect(saved.single.prisonMonths, PlayerVerdict.prisonMaxMonths);
-    expect(find.text('20'), findsOneWidget);
+    expect(find.text('240'), findsOneWidget);
   });
 
   testWidgets('an empty field keeps the current amount', (tester) async {
     final saved = await pumpTile(tester, VerdictOption.prison);
-    // 1 month.
-    expect(find.text('0.08'), findsOneWidget);
 
     await typeAndLeave(tester, '');
 
     expect(saved, isEmpty);
-    expect(find.text('0.08'), findsOneWidget);
+    expect(find.text('1'), findsOneWidget);
   });
 }

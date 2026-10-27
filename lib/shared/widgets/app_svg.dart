@@ -8,6 +8,7 @@ class AppSvg extends StatelessWidget {
     this.fit = BoxFit.fill,
     this.fallback,
     this.excludeFromSemantics = false,
+    this.colorFilter,
   });
 
   final String assetPath;
@@ -15,12 +16,16 @@ class AppSvg extends StatelessWidget {
   final Widget? fallback;
   final bool excludeFromSemantics;
 
+  /// Recolors the picture, e.g. white icons on a selected card.
+  final ColorFilter? colorFilter;
+
   @override
   Widget build(BuildContext context) {
     return SvgPicture.asset(
       assetPath,
       key: ValueKey(assetPath),
       fit: fit,
+      colorFilter: colorFilter,
       excludeFromSemantics: excludeFromSemantics,
       errorBuilder: (context, error, stackTrace) =>
           fallback ?? const SizedBox.shrink(),

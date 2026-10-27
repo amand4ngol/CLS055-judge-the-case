@@ -506,6 +506,9 @@ abstract final class AppTextStyles {
     AppColors.textSubtle,
     lineHeight: 17.33,
   );
+  static final verdictSubtitleSelected = verdictSubtitle.copyWith(
+    color: AppColors.white,
+  );
   static final verdictValue = _merriweather(
     13,
     AppColors.white,
