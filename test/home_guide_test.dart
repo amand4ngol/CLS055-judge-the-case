@@ -51,6 +51,35 @@ void main() {
     },
   );
 
+  testWidgets('doing what the hand shows on the target moves on', (
+    tester,
+  ) async {
+    await launch(tester, newPlayer());
+
+    // The hand's fingertip rests on the middle of the target.
+    Offset fingertip() =>
+        tester.getTopLeft(find.byIcon(Icons.touch_app)) + const Offset(21, 11);
+
+    await tester.tapAt(fingertip());
+    await tester.pumpAndSettle();
+    expect(find.text('2/4'), findsOneWidget);
+
+    // A tap does nothing on the swipe step...
+    await tester.tapAt(fingertip());
+    await tester.pumpAndSettle();
+    expect(find.text('2/4'), findsOneWidget);
+
+    // ...a swipe does.
+    await tester.dragFrom(fingertip(), const Offset(-150, 0));
+    await tester.pumpAndSettle();
+    expect(find.text('3/4'), findsOneWidget);
+
+    // Tapping the dimmed page does nothing.
+    await tester.tapAt(const Offset(10, 860));
+    await tester.pumpAndSettle();
+    expect(find.text('3/4'), findsOneWidget);
+  });
+
   testWidgets('"Skip" closes the tour', (tester) async {
     await launch(tester, newPlayer());
 

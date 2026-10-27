@@ -362,7 +362,7 @@ class _Bench extends StatelessWidget {
           ),
           // Left of the gavel, whose handle starts at x ≈ 178.
           Positioned(
-            left: 12,
+            left: 32,
             width: 156,
             top: 6,
             height: 40,

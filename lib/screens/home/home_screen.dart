@@ -22,7 +22,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   static const double _gapAboveHero = 24;
-  static const double _gapAboveCases = 30.9;
+  static const double _gapAboveCases = 32;
 
   /// Where the country picker opens, over the header.
   static const Offset _pickerOffset = Offset(16, 12);
@@ -122,13 +122,19 @@ class _HomeScreenState extends State<HomeScreen> {
   List<GuideStep> get _guideSteps => [
     GuideStep(
       target: _countryKey,
-      text: 'Your country: the real court cases you judge come from here. '
+      text:
+          'Your country: the real court cases you judge come from here. '
           'Tap the flag to change it',
     ),
-    GuideStep(target: _categoriesKey, text: 'Swipe and pick a category'),
+    GuideStep(
+      target: _categoriesKey,
+      text: 'Swipe and pick a category',
+      gesture: GuideGesture.swipe,
+    ),
     GuideStep(
       target: _casesKey,
-      text: 'Your cases in the category will showcase here. Tap one to start '
+      text:
+          'Your cases in the category will showcase here. Tap one to start '
           'judging',
       // The next case's medallion, in the middle of the board.
       focus: (board) => Rect.fromCenter(
@@ -179,6 +185,17 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     if (action == ResultAction.nextCase && mounted) await _openNextCase();
   }
+  // Future<void> _showResult(RulingResult result) async {
+  //   final navigator = Navigator.of(context);
+  //   var action = await navigator.push(ResultScreen.route(result));
+  //   if ( /* result.newAchievements.isNotEmpty && */ mounted) {
+  //     action = await AchievementScreen.showAll(
+  //       navigator,
+  //       Achievement.values, // result.newAchievements,
+  //     );
+  //   }
+  //   if (action == ResultAction.nextCase && mounted) await _openNextCase();
+  // }
 
   /// "Next Case" on the result screen: the next playable case of the
   /// selected category.

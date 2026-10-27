@@ -33,7 +33,7 @@ abstract final class AppColors {
   static const textMuted = Color(0xFF6F695E);
 
   /// Round profile button in the header.
-  static const profileButton = Color(0xFF333B32);
+  static const profileButton = Color(0xFF777267);
 
   static const cream = Color(0xFFEEE9DF);
 
@@ -192,6 +192,10 @@ abstract final class AppColors {
   /// Tip card of the tour: nearly opaque, so the dimmed page does not show
   /// through the text.
   static const guideCard = Color.fromRGBO(255, 255, 255, 0.96);
+
+  /// Ripple and shadow of the tour's tapping hand, so it shows on the
+  /// light page.
+  static const guideTouch = Color.fromRGBO(46, 69, 120, 0.6);
 
   // Trigger warning
 
