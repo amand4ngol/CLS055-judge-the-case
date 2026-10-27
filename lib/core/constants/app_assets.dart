@@ -33,7 +33,6 @@ abstract final class AppAssets {
   // Profile screen
   static const profileScales = 'assets/icons/profile_scales.svg';
   static const settings = 'assets/icons/settings.svg';
-  static const arrowDropDown = 'assets/icons/arrow_drop_down.svg';
 
   // Settings screen
   static const chevronDownDark = 'assets/icons/chevron_down_dark.svg';

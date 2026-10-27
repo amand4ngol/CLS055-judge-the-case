@@ -10,6 +10,7 @@ import '../../providers/home_provider.dart';
 import '../../shared/widgets/app_svg.dart';
 import '../result/result_screen.dart';
 import '../settings/settings_screen.dart';
+import 'previous_cases_screen.dart';
 import 'widgets/achievements_grid.dart';
 import 'widgets/previous_cases.dart';
 import 'widgets/stats_row.dart';
@@ -56,6 +57,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final result = await context.read<HomeProvider>().pastResult(ruling.caseId);
     if (result == null || !mounted) return;
     await navigator.push(ResultScreen.route(result, isRecap: true));
+  }
+
+  void _openPreviousCases(List<PlayerRuling> rulings) {
+    Navigator.of(
+      context,
+    ).push(PreviousCasesScreen.route(rulings, onPreview: _preview));
   }
 
   @override
@@ -136,17 +143,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             Text('CASE STATISTICS', style: AppTextStyles.profileSection),
             const SizedBox(height: 12),
-            StatsRow(stats: player.stats),
+            StatsRow(
+              stats: player.stats,
+              onCasesTap: () => _openPreviousCases(rulings),
+            ),
           ],
         ),
         _section(
+          // The last case card and "View More" bring their own space.
+          bottom: 8,
           children: [
             Text(
               'REVISE YOUR PREVIOUS CASES',
               style: AppTextStyles.profileSection,
             ),
             const SizedBox(height: 16),
-            PreviousCases(rulings: rulings, onPreview: _preview),
+            PreviousCases(
+              rulings: rulings,
+              onPreview: _preview,
+              onViewAll: () => _openPreviousCases(rulings),
+            ),
           ],
         ),
         _section(
@@ -165,10 +181,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _section({
     required List<Widget> children,
     double top = 20,
+    double bottom = 20,
     bool divider = true,
   }) {
     return Container(
-      padding: EdgeInsets.only(top: top, bottom: 20),
+      padding: EdgeInsets.only(top: top, bottom: bottom),
       decoration: divider
           ? const BoxDecoration(
               border: Border(
