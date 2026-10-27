@@ -134,7 +134,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _section(
           top: 0,
           children: [
-            Text('CASES STATISTICS', style: AppTextStyles.profileSection),
+            Text('CASE STATISTICS', style: AppTextStyles.profileSection),
             const SizedBox(height: 12),
             StatsRow(stats: player.stats),
           ],

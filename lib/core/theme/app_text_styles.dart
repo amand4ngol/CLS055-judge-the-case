@@ -262,11 +262,11 @@ abstract final class AppTextStyles {
 
   // Welcome card
   static final profileWelcome = _dmSans(
-    10,
+    14,
     FontWeight.w400,
     AppColors.beige.withValues(alpha: 0.55),
     letterSpacing: 2.5,
-    lineHeight: 15,
+    lineHeight: 18,
   );
   static final profileName = _merriweather(
     24,
@@ -281,17 +281,17 @@ abstract final class AppTextStyles {
     lineHeight: 17.33,
   );
   static final profileRank = _merriweather(
-    12,
+    16,
     AppColors.beige.withValues(alpha: 0.6),
-    lineHeight: 18,
+    lineHeight: 22,
   );
 
   /// "Court Clerk" in "Rank: Court Clerk", brighter than the "Rank: " before it.
   static final profileRankValue = _merriweather(
-    12,
+    16,
     AppColors.beige.withValues(alpha: 0.9),
     weight: FontWeight.w600,
-    lineHeight: 18,
+    lineHeight: 22,
   );
   static final profileCounter = _dmSans(
     11,
@@ -300,9 +300,9 @@ abstract final class AppTextStyles {
     lineHeight: 16.5,
   );
   static final profileMilestone = _merriweather(
-    12,
+    14,
     AppColors.beige.withValues(alpha: 0.8),
-    lineHeight: 18,
+    lineHeight: 20,
   );
 
   /// "CASES STATISTICS", "ACHIEVEMENTS", "REVISE YOUR PREVIOUS CASES".
